@@ -1,4 +1,5 @@
 from damster.utils import initialize_logger
+from atlassian import Bamboo
 import json
 import os
 import jinja2
@@ -10,17 +11,27 @@ log = initialize_logger(__name__)
 
 class BambooDeploymentsReport(object):
 
-    re_MANUAL = re.compile(r'Manual run by <a href="http[s]:\/\/[^"]*\/(.*)">(.*)<\/a>')
-    re_CHILD = re.compile(r'Child of <a href="http[s]:\/\/[^"]*">(.*)<\/a>')
+    re_MANUAL = re.compile(r'Manual run by <a href="http[s]?:\/\/[^"]*\/(.*)">(.*)<\/a>')
+    re_CHILD = re.compile(r'Child of <a href="http[s]?:\/\/[^"]*">(.*)<\/a>')
 
-    def __init__(self, bamboo, from_date, output_file='deployment_report'):
-        self.bamboo = bamboo
-        self.from_date = arrow.get(from_date)
+    def __init__(self, cfg, from_date, to_date=None, output_file='deployment_report'):
+        self.cfg = cfg
+        self.time_zone = cfg['Common']['time_zone']
+        self.from_date = arrow.get(from_date).replace(tzinfo=self.time_zone)
+        self.to_date = arrow.get(to_date).replace(tzinfo=self.time_zone) \
+            if to_date else arrow.utcnow().to(self.time_zone)
         self.output_file = output_file
         self.json_file = '{}.json'.format(self.output_file)
         self.csv_file = '{}.csv'.format(self.output_file)
         self.html_file = '{}.html'.format(self.output_file)
         self.report_dict = None
+        self.bamboo = Bamboo(**cfg['Bamboo'])
+
+    def _time_to_epoch(self, tm):
+        return arrow.get(tm / 1000).to(self.time_zone)
+
+    def _string_to_time(self, tm, fmt='YYYY-MM-DD HH:mm:ss'):
+        return tm.to(self.time_zone).format(fmt)
 
     def parse_trigger_info(self, msg):
         find = re.search(self.re_MANUAL, msg)
@@ -38,7 +49,9 @@ class BambooDeploymentsReport(object):
         raise ValueError('No regex for: {}'.format(msg))
 
     def generate_report(self):
-        log.info('Starting report generation')
+        log.info('Starting report generation for deployment results between {} and {}'.format(
+            self._string_to_time(self.from_date), self._string_to_time(self.to_date)
+        ))
         report = list()
         deploy_projects = self.bamboo.deployment_project()
 
@@ -61,27 +74,31 @@ class BambooDeploymentsReport(object):
                 deploy_results = self.bamboo.deployment_environment_results(env['id'], 'results')
                 if 'results' in deploy_results:
                     for result in deploy_results['results']:
-                        started_time = arrow.get(result['startedDate'] / 1000)
+                        started_time = self._time_to_epoch(result['startedDate'])
                         if started_time > self.from_date:
-                            finished_time = arrow.get(result['finishedDate'] / 1000) if 'finishedDate' in result else ''
-                            queued_time = arrow.get(result['queuedDate'] / 1000) if 'queuedDate' in result else ''
-                            executed_time = arrow.get(result['executedDate'] / 1000) if 'executedDate' in result else ''
-                            dep_trigger, user_id, user_name, build_id = self.parse_trigger_info(result['reasonSummary'])
-                            result_dict = dict(
-                                started=started_time.format('YYYY-MM-DD HH:mm:ss ZZ'),
-                                finished=finished_time.format('YYYY-MM-DD HH:mm:ss ZZ'),
-                                queued=queued_time.format('YYYY-MM-DD HH:mm:ss ZZ'),
-                                executed=executed_time.format('YYYY-MM-DD HH:mm:ss ZZ'),
-                                state=result['deploymentState'],
-                                version_name=result['deploymentVersionName'],
-                                deployment_type=dep_trigger,
-                                deployment_type_raw=result['reasonSummary'],
-                                deployment_trigger_user_id=user_id,
-                                deployment_trigger_user=user_name,
-                                deployment_trigger_build=build_id
-                            )
-                            log.debug('\t\t{}'.format(result_dict))
-                            env_dict['env_results'].append(result_dict)
+                            if started_time < self.to_date:
+                                finished_time = self._time_to_epoch(result['finishedDate']) \
+                                    if 'finishedDate' in result else ''
+                                queued_time = self._time_to_epoch(result['queuedDate']) \
+                                    if 'queuedDate' in result else ''
+                                executed_time = self._time_to_epoch(result['executedDate']) \
+                                    if 'executedDate' in result else ''
+                                trigger, user_id, user_name, build_id = self.parse_trigger_info(result['reasonSummary'])
+                                result_dict = dict(
+                                    started=self._string_to_time(started_time),
+                                    finished=self._string_to_time(finished_time),
+                                    queued=self._string_to_time(queued_time),
+                                    executed=self._string_to_time(executed_time),
+                                    state=result['deploymentState'],
+                                    version_name=result['deploymentVersionName'],
+                                    deployment_type=trigger,
+                                    deployment_type_raw=result['reasonSummary'],
+                                    deployment_trigger_user_id=user_id,
+                                    deployment_trigger_user=user_name,
+                                    deployment_trigger_build=build_id
+                                )
+                                log.debug('\t\t{}'.format(result_dict))
+                                env_dict['env_results'].append(result_dict)
                         else:
                             break  # Since results are ordered from newest, exit as soon as we find an older result
                 env_summary = dict(
@@ -165,9 +182,9 @@ class BambooDeploymentsReport(object):
         with open(out_html, 'w') as outfile:
             outfile.write(html)
 
-    def run_report(self):
+    def run_report(self, use_cache=True):
         if not self.report_dict:
-            if not os.path.isfile(self.json_file):
+            if not (os.path.isfile(self.json_file) and use_cache):
                 self.report_dict = self.generate_report()
                 self.save_to_json()
             else:
