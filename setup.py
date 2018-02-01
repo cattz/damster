@@ -22,13 +22,23 @@ setup(
     include_package_data=True,
 
     zip_safe=False,
-    install_requires=['requests>=2.7.0'],
+    install_requires=[
+        'requests',
+        'arrow'
+    ],
     extras_require={
         'dev': [
             'pytest',
             'pytest-pep8',
-            'pytest-cov',
+            'coverage',
             'tox'
+        ],
+        'reports': [
+            'jinja2'
+        ],
+        'metrics': [
+            'influxdb',
+            'shecdule'
         ]
     },
     platforms='Platform Independent',
