@@ -2,7 +2,11 @@
 
 {% block content %}
 
-        <h1>Bamboo Deployments Report</h1>
+        <h1>Bamboo Deployments between {{ summary.from_date }} and {{ summary.to_date}}
+                <span class="badge badge-success">{{ summary.successful }}</span>
+                <span class="badge badge-error">{{ summary.failed }}</span>
+                <span class="badge badge-info">{{ summary.in_progress }}</span>
+        </h1>
             {% for project in deployments %}
             <div class="panel-group" id="prj-{{ project.prj_id}}">
                 <div class="panel panel-default">

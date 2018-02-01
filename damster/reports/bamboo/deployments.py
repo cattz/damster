@@ -198,7 +198,17 @@ class BambooDeploymentsReport(object):
         jinja_env = jinja2.Environment(loader=jinja2.PackageLoader('damster', 'templates'))
         template = jinja_env.get_template(template_name)
         report = self.filter_projects_with_no_deployments() if filter_empty else self.report_dict
-        html = template.render(deployments=report)
+
+        summary = dict(
+            projects=len(report),
+            successful=sum([pr['summary']['successful'] for pr in report]),
+            failed=sum([pr['summary']['failed'] for pr in report]),
+            in_progress=sum([pr['summary']['in_progress'] for pr in report]),
+            from_date=self._string_to_time(self.from_date),
+            to_date=self._string_to_time(self.to_date)
+        )
+
+        html = template.render(deployments=report, summary=summary)
         mkpath(self.output_folder)
         with open(out_html, 'w') as outfile:
             outfile.write(html)
