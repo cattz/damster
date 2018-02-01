@@ -6,6 +6,6 @@ python:
     - "3.6"
 install: pip install tox
 before_script: 
-    - .travis/bump_version ./ minor > atlassian/VERSION
+    - .travis/bump_version ./ minor > damster/VERSION
 script:
     - tox
