@@ -74,7 +74,7 @@ class BambooDeploymentsReport(object):
         deploy_projects = self.bamboo.deployment_project()
 
         for project in deploy_projects:
-            plan_key = project['planKey'] if 'planKey' in project else ''
+            plan_key = project['planKey']['key'] if 'planKey' in project else ''
             project_dict = dict(
                 prj_id=project['id'],
                 prj_name=project['name'],
@@ -161,7 +161,7 @@ class BambooDeploymentsReport(object):
                     line = ','.join([
                         str(project['prj_id']),
                         project['prj_name'],
-                        project['prj_plan']['key'],
+                        project['prj_plan'],
                         environment['env_name'],
                         result['started'],
                         result['finished'],
