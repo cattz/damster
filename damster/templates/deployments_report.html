@@ -1,0 +1,86 @@
+{% extends "bootstrap_base.html" %}
+
+{% block content %}
+
+        <h1>Bamboo Deployments Report</h1>
+            {% for project in deployments %}
+            <div class="panel-group" id="prj-{{ project.prj_id}}">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#prj-{{ project.prj_id}}" href="#prj-{{ project.prj_id}}-envs">
+                                {{ project.prj_name}}</a>
+
+                            {% if project.summary.successful > 0 %}
+                                <span class="badge badge-success">{{ project.summary.successful }}</span>{% endif %}
+                            {% if project.summary.failed > 0 %}
+                                <span class="badge badge-error">{{ project.summary.failed }}</span>{% endif %}
+                            {% if project.summary.in_progress > 0 %}
+                                <span class="badge badge-info">{{ project.summary.in_progress }}</span>{% endif %}
+                        </h3>
+                    </div>
+                    <div id="prj-{{ project.prj_id}}-envs" class="panel-collapse collapse">
+                        <ul>
+                        {% for env in project.prj_environments %}
+                        {% if env.summary.successful > 0 or env.summary.failed > 0 or env.summary.in_progress > 0 %}
+                        <li class="panel-group" id="prj-{{ project.prj_id }}-env-{{ env.env_id }}">
+                                {% if env.env_results|length > 0 %}
+                                    <div class="">
+                                        <h4>
+                                            {{ env.env_name }}
+                                            {% if env.summary.successful > 0 %}
+                                                <span class="badge badge-success">{{ env.summary.successful }}</span>{% endif %}
+                                            {% if env.summary.failed > 0 %}
+                                                <span class="badge badge-error">{{ env.summary.failed }}</span>{% endif %}
+                                            {% if env.summary.in_progress > 0 %}
+                                                <span class="badge badge-info">{{ env.summary.in_progress }}</span>{% endif %}
+                                        </h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Status</th>
+                                                    <th>Started</th>
+                                                    <th>Finished</th>
+                                                    <th>Version</th>
+                                                    <th>Trigger</th>
+                                                    <th>User ID</th>
+                                                    <th>User Name</th>
+                                                    <th>Linked Build</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="">
+                                              {% for result in env.env_results %}
+                                                <tr>
+                                                    {% if result.state == 'SUCCESS' %}
+                                                        <td class="btn-success">
+                                                    {% elif result.state == 'FAILED' %}
+                                                         <td class="btn-danger">
+                                                    {% else %}
+                                                        <td class="btn-info">
+                                                    {% endif %}
+                                                        {{ result.state }}</td>
+                                                    <td>{{ result.started }}</td>
+                                                    <td>{{ result.finished }}</td>
+                                                    <td>{{ result.version_name }}</td>
+                                                    <td>{{ result.deployment_type_raw }}</td>
+                                                    <td>{{ result.deployment_trigger_user_id }}</td>
+                                                    <td>{{ result.deployment_trigger_user }}</td>
+                                                    <td><a href="https://swfactory.aegon.com/bamboo/browse/{{ result.deployment_trigger_build }}">{{ result.deployment_trigger_build }}</a></td>
+                                                </tr>
+                                              {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% endif %}
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+{% endblock %}

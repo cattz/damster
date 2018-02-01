@@ -23,8 +23,11 @@ setup(
 
     zip_safe=False,
     install_requires=[
-        'requests',
-        'arrow'
+        'atlassian-python-api',
+        'arrow',
+        'influxdb',
+        'schedule',
+        'jinja2'
     ],
     extras_require={
         'dev': [
@@ -42,6 +45,13 @@ setup(
         ]
     },
     platforms='Platform Independent',
+
+    entry_points={
+        "console_scripts": [
+            "damster-metrics    = damster.metric:main",
+            "damster-reports    = damster.report:main"
+        ]
+    },
 
     classifiers=[
         'Development Status :: 4 - Beta',

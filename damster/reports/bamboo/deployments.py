@@ -158,7 +158,7 @@ class BambooDeploymentsReport(object):
         out_html = html_file or self.html_file
         log.info('Saving to HTML: {}'.format(out_html))
 
-        jinja_env = jinja2.Environment(loader=jinja2.PackageLoader('metco', 'templates'))
+        jinja_env = jinja2.Environment(loader=jinja2.PackageLoader('damster', 'templates'))
         template = jinja_env.get_template(template_name)
         report = self.filter_projects_with_no_deployments() if filter_empty else self.report_dict
         html = template.render(deployments=report)
@@ -175,4 +175,4 @@ class BambooDeploymentsReport(object):
 
         self.save_to_csv()
 
-        self.save_to_html('deployments_simple.html')
+        self.save_to_html('deployments_report.html')

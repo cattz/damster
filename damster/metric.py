@@ -1,6 +1,6 @@
 #!/bin/env python
 from damster.utils import initialize_logger, get_config
-from damster.reports.bamboo import BambooBuildAgentsMetrics, BambooDeploymentsReport
+from damster.metrics.bamboo import BambooBuildAgentsMetrics
 from atlassian import Bamboo
 from influxdb import InfluxDBClient
 

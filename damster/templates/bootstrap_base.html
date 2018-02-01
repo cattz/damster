@@ -1,0 +1,69 @@
+<title>Bamboo Reports</title>
+  <head>
+    <!-- Bootstrap -->
+    <!--link href="css/bootstrap.min.css" rel="stylesheet"-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!--link href="css/custom.css" rel="stylesheet"-->
+    <style>
+        /*.badge {
+          padding: 1px 9px 2px;
+          font-size: 12.025px;
+          font-weight: bold;
+          white-space: nowrap;
+          color: #ffffff;
+          background-color: #999999;
+          -webkit-border-radius: 9px;
+          -moz-border-radius: 9px;
+          border-radius: 9px;
+        }*/
+        .badge:hover {
+          color: #ffffff;
+          text-decoration: none;
+          cursor: pointer;
+        }
+        .badge-error {
+          background-color: #b94a48;
+        }
+        .badge-error:hover {
+          background-color: #953b39;
+        }
+        .badge-warning {
+          background-color: #f89406;
+        }
+        .badge-warning:hover {
+          background-color: #c67605;
+        }
+        .badge-success {
+          background-color: #468847;
+        }
+        .badge-success:hover {
+          background-color: #356635;
+        }
+        .badge-info {
+          background-color: #3a87ad;
+        }
+        .badge-info:hover {
+          background-color: #2d6987;
+        }
+        .badge-inverse {
+          background-color: #333333;
+        }
+        .badge-inverse:hover {
+          background-color: #1a1a1a;
+        }
+    </style>
+
+  </head>
+  <body>
+    <div class="container-fluid">
+      {%- block content %}{% endblock %}
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script-->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!--script src="js/bootstrap.min.js"></script-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>
