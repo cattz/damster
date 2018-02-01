@@ -5,6 +5,8 @@ import os
 import jinja2
 import arrow
 import re
+from distutils.dir_util import mkpath
+
 
 log = initialize_logger(__name__)
 
@@ -14,16 +16,14 @@ class BambooDeploymentsReport(object):
     re_MANUAL = re.compile(r'Manual run by <a href="http[s]?:\/\/[^"]*\/(.*)">(.*)<\/a>')
     re_CHILD = re.compile(r'Child of <a href="http[s]?:\/\/[^"]*">(.*)<\/a>')
 
-    def __init__(self, cfg, from_date, to_date=None, output_file='deployment_report'):
+    def __init__(self, cfg, from_date, to_date=None, name='bamboo_deployments_report'):
+
+        self.name = name
         self.cfg = cfg
         self.time_zone = cfg['Common']['time_zone']
         self.from_date = arrow.get(from_date).replace(tzinfo=self.time_zone)
         self.to_date = arrow.get(to_date).replace(tzinfo=self.time_zone) \
             if to_date else arrow.utcnow().to(self.time_zone)
-        self.output_file = output_file
-        self.json_file = '{}.json'.format(self.output_file)
-        self.csv_file = '{}.csv'.format(self.output_file)
-        self.html_file = '{}.html'.format(self.output_file)
         self.report_dict = None
         self.bamboo = Bamboo(**cfg['Bamboo'])
 
@@ -32,6 +32,22 @@ class BambooDeploymentsReport(object):
 
     def _string_to_time(self, tm, fmt='YYYY-MM-DD HH:mm:ss'):
         return tm.to(self.time_zone).format(fmt)
+
+    @property
+    def output_folder(self):
+        date1 = self.from_date.format('YYYY-MM-DD')
+        date2 = self.to_date.format('YYYY-MM-DD')
+        return os.path.join(
+            self.cfg['Reports']['destination_folder'],
+            self.name,
+            '__'.join([date1, date2]),
+        )
+
+    def output_file(self, ext='json'):
+        return os.path.join(
+            self.output_folder,
+            '{}.{}'.format(self.name, ext)
+        )
 
     def parse_trigger_info(self, msg):
         find = re.search(self.re_MANUAL, msg)
@@ -116,9 +132,9 @@ class BambooDeploymentsReport(object):
             report.append(project_dict)
         return report
 
-    def save_to_csv(self, csv_file=None):
-        log.info('Saving to CSV')
-        out_csv = csv_file or self.csv_file
+    def save_to_csv(self):
+        out_csv = self.output_file(ext='csv')
+        log.info('Saving to CSV file {}'.format(out_csv))
         lines = list()
         header = ','.join([
             'prj_id',
@@ -157,6 +173,7 @@ class BambooDeploymentsReport(object):
                         result['deployment_type_raw'].replace(', ', '; ').replace('\n', ' - ')
                     ])
                     lines.append(line)
+        mkpath(self.output_folder)
         with open(out_csv, 'w') as outfile:
             outfile.write('\n'.join(lines))
 
@@ -164,32 +181,34 @@ class BambooDeploymentsReport(object):
         return [prj for prj in self.report_dict if sum(
             [prj['summary']['successful'], prj['summary']['failed'], prj['summary']['in_progress']]) > 0]
 
-    def save_to_json(self, json_file=None, filter_empty=False):
-        log.info('Saving to JSON')
-        out_json = json_file or self.json_file
+    def save_to_json(self, filter_empty=False):
+        out_json = self.output_file()
+        log.info('Saving to JSON: {}'.format(out_json))
         report = self.filter_projects_with_no_deployments() if filter_empty else self.report_dict
+        mkpath(self.output_folder)
         with open(out_json, 'w') as outfile:
             json.dump(report, outfile)
 
-    def save_to_html(self, template_name, html_file=None, filter_empty=True):
-        out_html = html_file or self.html_file
+    def save_to_html(self, template_name=None, filter_empty=True):
+        out_html = self.output_file(ext='html')
         log.info('Saving to HTML: {}'.format(out_html))
-
+        template_name = template_name or self.name + '.html'
         jinja_env = jinja2.Environment(loader=jinja2.PackageLoader('damster', 'templates'))
         template = jinja_env.get_template(template_name)
         report = self.filter_projects_with_no_deployments() if filter_empty else self.report_dict
         html = template.render(deployments=report)
+        mkpath(self.output_folder)
         with open(out_html, 'w') as outfile:
             outfile.write(html)
 
     def run_report(self, use_cache=True):
         if not self.report_dict:
-            if not (os.path.isfile(self.json_file) and use_cache):
+            if not (os.path.isfile(self.output_file()) and use_cache):
                 self.report_dict = self.generate_report()
                 self.save_to_json()
             else:
-                self.report_dict = json.load(open(self.json_file))
+                self.report_dict = json.load(open(self.output_file()))
 
         self.save_to_csv()
 
-        self.save_to_html('deployments_report.html')
+        self.save_to_html()

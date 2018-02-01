@@ -12,10 +12,10 @@ def main():
 
     report = BambooDeploymentsReport(
         cfg,
-        from_date='2018-01-18 00:00:00',
-        to_date='2018-02-01 14:06:31'
+        from_date='2018-01-18',
+        to_date='2018-03-01'
     )
-    report.run_report()
+    report.run_report(use_cache=False)
 
 
 if __name__ == "__main__":
