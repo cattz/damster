@@ -7,7 +7,7 @@
             <div class="panel-group" id="prj-{{ project.prj_id}}">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">
+                        <h2 class="panel-title">
                             <a data-toggle="collapse" data-parent="#prj-{{ project.prj_id}}" href="#prj-{{ project.prj_id}}-envs">
                                 {{ project.prj_name}}</a>
 
@@ -17,7 +17,7 @@
                                 <span class="badge badge-error">{{ project.summary.failed }}</span>{% endif %}
                             {% if project.summary.in_progress > 0 %}
                                 <span class="badge badge-info">{{ project.summary.in_progress }}</span>{% endif %}
-                        </h3>
+                        </h2>
                     </div>
                     <div id="prj-{{ project.prj_id}}-envs" class="panel-collapse collapse">
                         <ul>
@@ -26,7 +26,7 @@
                         <li class="panel-group" id="prj-{{ project.prj_id }}-env-{{ env.env_id }}">
                                 {% if env.env_results|length > 0 %}
                                     <div class="">
-                                        <h4>
+                                        <h3>
                                             {{ env.env_name }}
                                             {% if env.summary.successful > 0 %}
                                                 <span class="badge badge-success">{{ env.summary.successful }}</span>{% endif %}
@@ -34,7 +34,7 @@
                                                 <span class="badge badge-error">{{ env.summary.failed }}</span>{% endif %}
                                             {% if env.summary.in_progress > 0 %}
                                                 <span class="badge badge-info">{{ env.summary.in_progress }}</span>{% endif %}
-                                        </h4>
+                                        </h3>
                                     </div>
                                     <div class="panel-body">
                                         <table class="table table-striped">
