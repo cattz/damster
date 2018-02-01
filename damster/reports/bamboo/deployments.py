@@ -31,7 +31,9 @@ class BambooDeploymentsReport(object):
         return arrow.get(tm / 1000).to(self.time_zone)
 
     def _string_to_time(self, tm, fmt='YYYY-MM-DD HH:mm:ss'):
-        return tm.to(self.time_zone).format(fmt)
+        if tm:
+            return tm.to(self.time_zone).format(fmt)
+        return tm
 
     @property
     def output_folder(self):
