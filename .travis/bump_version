@@ -18,6 +18,7 @@ EOF
     exit 1
 fi
 
+
 repo_path=${1}
 increase=${2:patch}
 
@@ -30,6 +31,13 @@ function autoversion(){
         BUILD_NUMBER="0"  # In the developer machine, this will build x.y.z.dev0
     fi
 
+    # Only builds from master are not dev builds
+    if [ "${TRAVIS_BRANCH}" == "master" ]; then
+        dev_suffix=""
+    else
+        dev_suffix=".dev${BUILD_NUMBER}"
+    fi
+
     cd ${repo_path}
 
     git fetch --tags 2>/dev/null
@@ -37,7 +45,7 @@ function autoversion(){
 
     # Catch existing no tags case
     if [ -z "${last_tag}" ]; then
-        echo "0.1.0.dev${BUILD_NUMBER}"
+        echo "0.1.0${dev_suffix}"
     else
         a=( ${last_tag//./ } )   # replace points, split into array
         case ${increase} in
@@ -54,7 +62,7 @@ function autoversion(){
             a[2]=0
             ;;
         esac
-        echo "${a[0]}.${a[1]}.${a[2]}.dev${BUILD_NUMBER}"
+        echo "${a[0]}.${a[1]}.${a[2]}${dev_suffix}"
     fi
 }
 

@@ -5,7 +5,17 @@ python:
     - "3.5"
     - "3.6"
 install: pip install tox
-before_script: 
-    - .travis/bump_version ./ minor > damster/VERSION
+before_script:
+    - .travis/bump_version ./ ${AUTOVERSION_INCREMENT} > atlassian/VERSION
 script:
     - tox
+
+deploy:
+  provider: pypi
+  user: "cattz"
+  distributions: sdist bdist_wheel
+  password:
+    secure: py71sMNlWEeqGzmKW4UDnAd/fa+W3uiR+uu881CtjrLankC4NipxH/t2tK4H0OS3zlO6BGpDlfUOiiFROUhwUbSiXeOGtKdQFR9FX9l6h6VDy/AVnAQtNnTPM0cv+YMySEHQmzd4v14ZfwETgrjPGJcI/83AWg/WyRlEQ49LZj6Oa1RsTfWwkdp1xUSRqxNa+dAyp84G8OxlqCCCtPmbpRaBpNld/za7ptk2HpG0Fh5pb2iSpgBkRer6DRCYO+Ao+j82yPLA23uvBq10TLbAACX9P8GjkHSz0z3lBkMnaVDxrw2A3SX1IJiWzFLkSY4EoKakBONxD/FATVcRx3pCKHOWIPNfFUMnQMxpRa+gh1Ot7hy+jVHj9WLVaK96oJTT2kTOj/VA1DHl5mA+SX/BcMqyGD989FbKBWoVBY64YuprO2LlUQDYeJOLyAYkuYMohIogmi5LX/+Gfpt2lNEIRY4SyV6SdSdhCQnIB1nZaE8u/ZW6qF/p57JlN3+sLACNCKHUOw4aFmRiBcLWjBCSuw/gS2J3fbFwKbfcg6tGtF7Oe7D0nDvEXLvXr2UgmSWIhlaz+LTvCMrZWbLg79j+X0qs3f3aUcXoLpEgM4Jz3qhbH6ana8ifk+KrmPp6vwH55U/CNVIOPL1F7WBQ7Ggl68MCcPVusEMoQObwiee1C7g=
+  on:
+    branch: master
+    python: 3.5
