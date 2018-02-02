@@ -1,4 +1,5 @@
 from damster.utils import initialize_logger
+from damster.reports.bamboo.utils import TriggerReason
 from atlassian import Bamboo
 import json
 import os
@@ -13,8 +14,10 @@ log = initialize_logger(__name__)
 
 class BambooDeploymentsReport(object):
 
-    re_MANUAL = re.compile(r'Manual run by <a href="http[s]?:\/\/[^"]*\/(.*)">(.*)<\/a>')
-    re_CHILD = re.compile(r'Child of <a href="http[s]?:\/\/[^"]*">(.*)<\/a>')
+    re_MANUAL = re.compile(
+        r'Manual run by (?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?')
+    re_CHILD = re.compile(
+        r'Child of <a href="http[s]?:\/\/[^"]*">(.*)<\/a>')
 
     def __init__(self, cfg, from_date, to_date=None, name='bamboo_deployments_report'):
 
@@ -51,21 +54,6 @@ class BambooDeploymentsReport(object):
             '{}.{}'.format(self.name, ext)
         )
 
-    def parse_trigger_info(self, msg):
-        find = re.search(self.re_MANUAL, msg)
-        if msg.startswith('Scheduled'):
-            return 'Scheduled', '', '', ''
-        if find:
-            full_name = find.group(2)
-            if ',' in full_name:
-                last, first = full_name.split(', ')
-                full_name = '{} {}'.format(first, last)
-            return 'Manual', find.group(1), full_name, ''
-        find = re.search(self.re_CHILD, msg)
-        if find:
-            return 'Child', '', '', find.group(1)
-        raise ValueError('No regex for: {}'.format(msg))
-
     def generate_report(self):
         log.info('Starting report generation for deployment results between {} and {}'.format(
             self._string_to_time(self.from_date), self._string_to_time(self.to_date)
@@ -101,7 +89,7 @@ class BambooDeploymentsReport(object):
                                     if 'queuedDate' in result else ''
                                 executed_time = self._time_to_epoch(result['executedDate']) \
                                     if 'executedDate' in result else ''
-                                trigger, user_id, user_name, build_id = self.parse_trigger_info(result['reasonSummary'])
+                                trigger, user_id, user_name, build_id = TriggerReason(result['reasonSummary']).tuple
                                 result_dict = dict(
                                     started=self._string_to_time(started_time),
                                     finished=self._string_to_time(finished_time),
@@ -158,23 +146,28 @@ class BambooDeploymentsReport(object):
         for project in self.report_dict:
             for environment in project['prj_environments']:
                 for result in environment['env_results']:
-                    line = ','.join([
-                        str(project['prj_id']),
-                        project['prj_name'],
-                        project['prj_plan'],
-                        environment['env_name'],
-                        result['started'],
-                        result['finished'],
-                        result['queued'],
-                        result['executed'],
-                        result['version_name'],
-                        result['deployment_type'],
-                        result['deployment_trigger_user'],
-                        result['deployment_trigger_user_id'],
-                        result['deployment_trigger_build'],
-                        result['deployment_type_raw'].replace(', ', '; ').replace('\n', ' - ')
-                    ])
-                    lines.append(line)
+                    try:
+                        line = ','.join([
+                            str(project['prj_id']),
+                            project['prj_name'],
+                            project['prj_plan'],
+                            environment['env_name'],
+                            result['started'],
+                            result['finished'],
+                            result['queued'],
+                            result['executed'],
+                            result['version_name'],
+                            result['deployment_type'],
+                            result['deployment_trigger_user'],
+                            result['deployment_trigger_user_id'],
+                            result['deployment_trigger_build'],
+                            result['deployment_type_raw'].replace(', ', '; ').replace('\n', ' - ')
+                        ])
+                        lines.append(line)
+                    except TypeError as e:
+                        log.error(e)
+                        log.error(result)
+
         mkpath(self.output_folder)
         with open(out_csv, 'w') as outfile:
             outfile.write('\n'.join(lines))
@@ -204,8 +197,8 @@ class BambooDeploymentsReport(object):
             successful=sum([pr['summary']['successful'] for pr in report]),
             failed=sum([pr['summary']['failed'] for pr in report]),
             in_progress=sum([pr['summary']['in_progress'] for pr in report]),
-            from_date=self._string_to_time(self.from_date),
-            to_date=self._string_to_time(self.to_date)
+            from_date=self._string_to_time(self.from_date, fmt='YYYY/MM/DD'),
+            to_date=self._string_to_time(self.to_date, fmt='YYYY/MM/DD')
         )
 
         html = template.render(deployments=report, summary=summary)
