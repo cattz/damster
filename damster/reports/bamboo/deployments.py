@@ -184,7 +184,7 @@ class BambooDeploymentsReport(object):
                             result['executed'],
                             result['version_name'],
                             result['deployment_type'],
-                            result['deployment_trigger_user'],
+                            result['deployment_trigger_user'].replace(', ', '; '),
                             result['deployment_trigger_user_id'],
                             result['deployment_trigger_build'],
                             result['deployment_type_raw'].replace(', ', '; ').replace('\n', ' - ')
