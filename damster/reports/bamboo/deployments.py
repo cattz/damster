@@ -83,7 +83,7 @@ class BambooDeploymentsReport(object):
                                     if 'queuedDate' in result else ''
                                 executed_time = self._time_to_epoch(result['executedDate']) \
                                     if 'executedDate' in result else ''
-                                trigger, user_id, user_name, build_id = TriggerReason(result['reasonSummary']).tuple
+                                trigger, user_name, user_id, build_id = TriggerReason(result['reasonSummary']).tuple
                                 result_dict = dict(
                                     id=result['id'],
                                     started=self._string_to_time(started_time),
