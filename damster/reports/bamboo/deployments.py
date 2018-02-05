@@ -91,6 +91,7 @@ class BambooDeploymentsReport(object):
                                     if 'executedDate' in result else ''
                                 trigger, user_id, user_name, build_id = TriggerReason(result['reasonSummary']).tuple
                                 result_dict = dict(
+                                    id=result['id'],
                                     started=self._string_to_time(started_time),
                                     finished=self._string_to_time(finished_time),
                                     queued=self._string_to_time(queued_time),
@@ -101,7 +102,8 @@ class BambooDeploymentsReport(object):
                                     deployment_type_raw=result['reasonSummary'],
                                     deployment_trigger_user_id=user_id,
                                     deployment_trigger_user=user_name,
-                                    deployment_trigger_build=build_id
+                                    deployment_trigger_build=build_id,
+                                    details=self.get_build_details_from_result(result)
                                 )
                                 log.debug('\t\t{}'.format(result_dict))
                                 env_dict['env_results'].append(result_dict)
@@ -117,10 +119,29 @@ class BambooDeploymentsReport(object):
             project_dict['summary'] = dict(
                 successful=sum([e['summary']['successful'] for e in project_dict['prj_environments']]),
                 failed=sum([e['summary']['failed'] for e in project_dict['prj_environments']]),
-                in_progress=sum([e['summary']['in_progress'] for e in project_dict['prj_environments']])
+                in_progress=sum([e['summary']['in_progress'] for e in project_dict['prj_environments']]),
             )
             report.append(project_dict)
         return report
+
+    def get_build_details_from_result(self, result):
+        details = list()
+        for artifact in result['deploymentVersion']['items']:
+            log.info('Getting info for plan: {}'.format(artifact))
+            plan_key = artifact['planResultKey']['key']
+            build = self.bamboo.results(plan_key, expand=None)
+            trigger, user_name, user_id, trigger_plan_key = TriggerReason(build['buildReason']).tuple
+            details.append(
+                dict(
+                    plan_key=plan_key,
+                    trigger=trigger,
+                    user_id=user_id,
+                    user_name=user_name,
+                    trigger_plan_key=trigger_plan_key,
+                    build_reason=build['buildReason']
+                )
+            )
+        return details
 
     def save_to_csv(self):
         out_csv = self.output_file(ext='csv')
@@ -198,7 +219,8 @@ class BambooDeploymentsReport(object):
             failed=sum([pr['summary']['failed'] for pr in report]),
             in_progress=sum([pr['summary']['in_progress'] for pr in report]),
             from_date=self._string_to_time(self.from_date, fmt='YYYY/MM/DD'),
-            to_date=self._string_to_time(self.to_date, fmt='YYYY/MM/DD')
+            to_date=self._string_to_time(self.to_date, fmt='YYYY/MM/DD'),
+            bamboo_url=self.bamboo.url
         )
 
         html = template.render(deployments=report, summary=summary)

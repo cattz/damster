@@ -49,9 +49,9 @@
                                                     <th>Finished</th>
                                                     <th>Version</th>
                                                     <th>Trigger</th>
-                                                    <th>User ID</th>
-                                                    <th>User Name</th>
                                                     <th>Linked Build</th>
+                                                    <th>Build reason</th>
+                                                    <th>Build result</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="">
@@ -64,14 +64,23 @@
                                                     {% else %}
                                                         <td class="btn-info">
                                                     {% endif %}
-                                                        {{ result.state }}</td>
+                                                    <a href="{{ summary.bamboo_url }}/deploy/viewDeploymentResult.action?deploymentResultId={{ result.id }}">
+                                                        {{ result.state }}</a>
+                                                    </td>
                                                     <td>{{ result.started }}</td>
                                                     <td>{{ result.finished }}</td>
                                                     <td>{{ result.version_name }}</td>
                                                     <td>{{ result.deployment_type_raw }}</td>
-                                                    <td>{{ result.deployment_trigger_user_id }}</td>
-                                                    <td>{{ result.deployment_trigger_user }}</td>
-                                                    <td><a href="https://swfactory.aegon.com/bamboo/browse/{{ result.deployment_trigger_build }}">{{ result.deployment_trigger_build }}</a></td>
+                                                    <td><a href="{{ summary.bamboo_url }}/browse/{{ result.deployment_trigger_build }}">{{ result.deployment_trigger_build }}</a></td>
+                                                    <td>
+                                                        {% for detail in result.details %} {{ detail.build_reason }}
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td>
+                                                        {% for detail in result.details %}
+                                                        <a href="{{ summary.bamboo_url }}/browse/{{ detail.plan_key }}">{{ detail.plan_key }}</a>
+                                                        {% endfor %}
+                                                    </td>
                                                 </tr>
                                               {% endfor %}
                                             </tbody>
