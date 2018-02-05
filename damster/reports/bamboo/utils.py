@@ -1,4 +1,7 @@
+from damster.utils import initialize_logger
 import re
+
+log = initialize_logger(__name__)
 
 
 class TriggerReason(object):
@@ -29,7 +32,7 @@ class TriggerReason(object):
         self.trigger_type, self.user_id, self.user_name, self.build_key = self.parse()
 
     def parse(self):
-        if self.msg.startswith('Code has changed'):
+        if self.msg.startswith('Code has changed') or self.msg.startswith('Code changes detected'):
             return 'Commit', '', '', ''
 
         if self.msg.startswith('Scheduled'):
@@ -55,7 +58,9 @@ class TriggerReason(object):
             return 'Rebuilt', user_id,  found.group('user_name'), ''
 
         else:
-            raise ValueError('No regex matching: {}'.format(self.msg))
+            log.error('No regex matching: {}'.format(self.msg))
+            #raise ValueError('No regex matching: {}'.format(self.msg))
+            return '', '', '', ''
 
     @property
     def tuple(self):
