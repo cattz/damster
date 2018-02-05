@@ -8,7 +8,9 @@ class TestParseTriggerReason(object):
         ('Manual run by <a href="https://host/path/to/userid">User Name</a>', ('Manual', 'User Name', 'userid', '')),
         ('Manual run by someuser', ('Manual', 'someuser', 'someuser', '')),
         ('Code has changed', ('Commit', '', '', '')),
-        ('Scheduled', ('Scheduled', '', '', ''))
+        ('Scheduled', ('Scheduled', '', '', '')),
+        ('Changes by <a href="http://url/viewUserSummary.action?currentUserName=usid">Last, Fisrt</a>',
+         ('Commit', 'Last, Fisrt', 'usid', ''))
     ]
 
     def test_dummy(self):

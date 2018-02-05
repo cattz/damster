@@ -16,6 +16,9 @@ class TriggerReason(object):
         r'Manual run by (?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?')
     child = re.compile(
         r'Child of <a href="http[s]?:\/\/[^"]*">(?P<parent_plan>.*)<\/a>')
+    source = re.compile(
+        r'Changes by (?:<a href="http[s]?:\/\/[^=]*=(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?'
+    )
 
     def __init__(self, msg):
 
@@ -27,6 +30,7 @@ class TriggerReason(object):
 
         self.parse()
 
+    # TODO: This needs refactoring
     def parse(self):
         if self.msg.startswith('Code has changed'):
             self.trigger_type = 'Commit'
@@ -48,7 +52,14 @@ class TriggerReason(object):
                     self.user_id = self.user_name = ''
                     self.build_key = found.group('parent_plan')
                 else:
-                    raise ValueError('No regex matching: {}'.format(self.msg))
+                    found = re.search(self.source, self.msg)
+                    if found:
+                        self.trigger_type = 'Commit'
+                        self.user_name = found.group('user_name')
+                        self.user_id = found.group('user_id') or self.user_name
+                        self.build_key = ''
+                    else:
+                        raise ValueError('No regex matching: {}'.format(self.msg))
 
     @property
     def tuple(self):
