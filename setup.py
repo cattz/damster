@@ -27,7 +27,8 @@ setup(
         'arrow',
         'influxdb',
         'schedule',
-        'jinja2'
+        'jinja2',
+        'psycopg2'
     ],
     extras_require={
         'dev': [
@@ -37,7 +38,8 @@ setup(
             'tox'
         ],
         'reports': [
-            'jinja2'
+            'jinja2',
+            'psycopg2'
         ],
         'metrics': [
             'influxdb',
