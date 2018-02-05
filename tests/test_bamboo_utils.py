@@ -15,7 +15,8 @@ class TestParseTriggerReason(object):
          ('Rebuilt', 'John Snow', 'jsnow', '')),
         ('Rebuilt      by <a href="https://foo.bar.com/bamboo/browse/user/mward">M Ward</a>',
          ('Rebuilt', 'M Ward', 'mward', '')),
-        ('Code changes detected', ('Commit', '', '', ''))
+        ('Code changes detected', ('Commit', '', '', '')),
+        ('First build for this plan', ('First build', '', '', ''))
     ]
 
     def test_dummy(self):

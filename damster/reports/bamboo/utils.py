@@ -38,6 +38,9 @@ class TriggerReason(object):
         if self.msg.startswith('Scheduled'):
             return 'Scheduled', '', '', ''
 
+        if self.msg.startswith('First build for this plan'):
+            return 'First build', '', '', ''
+
         found = re.search(self.manual, self.msg)
         if found:
             user_id = found.group('user_id') or found.group('user_name')
