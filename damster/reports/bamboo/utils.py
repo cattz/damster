@@ -15,12 +15,12 @@ class TriggerReason(object):
     manual = re.compile(
         r'Manual run by (?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?')
     child = re.compile(
-        r'Child of <a href="http[s]?:\/\/[^"]*">(?P<parent_plan>.*)<\/a>')
+        r'Child\s+of\s+<a href="http[s]?:\/\/[^"]*">(?P<parent_plan>.*)<\/a>')
     source = re.compile(
-        r'Changes by (?:<a href="http[s]?:\/\/[^=]*=(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?'
+        r'Changes\s+by\s+(?:<a href="http[s]?:\/\/[^=]*=(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?'
     )
     rebuilt = re.compile(
-        r'Rebuilt by (?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?'
+        r'Rebuilt\s+by\s+(?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?'
     )
 
     def __init__(self, msg):

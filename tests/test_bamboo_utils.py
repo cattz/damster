@@ -12,7 +12,9 @@ class TestParseTriggerReason(object):
         ('Changes by <a href="http://url/viewUserSummary.action?currentUserName=usid">Last, Fisrt</a>',
          ('Commit', 'Last, Fisrt', 'usid', '')),
         ('Rebuilt by <a href="https://foo.bar.com/bamboo/browse/user/jsnow">John Snow</a>',
-         ('Rebuilt', 'John Snow', 'jsnow', ''))
+         ('Rebuilt', 'John Snow', 'jsnow', '')),
+        ('Rebuilt      by <a href="https://foo.bar.com/bamboo/browse/user/mward">M Ward</a>',
+         ('Rebuilt', 'M Ward', 'mward', ''))
     ]
 
     def test_dummy(self):
