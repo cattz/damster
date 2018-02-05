@@ -123,21 +123,29 @@ class BambooDeploymentsReport(object):
         if not('deploymentVersion' in result and 'items' in result['deploymentVersion']):
             log.error('No version details available for {}'.format(result))
             return details
-        for artifact in result['deploymentVersion']['items']:
-            log.info('Getting info for plan: {}'.format(artifact))
-            plan_key = artifact['planResultKey']['key']
-            build = self.bamboo.results(plan_key, expand=None)
-            trigger, user_name, user_id, trigger_plan_key = TriggerReason(build['buildReason']).tuple
-            details.append(
-                dict(
-                    plan_key=plan_key,
-                    trigger=trigger,
-                    user_id=user_id,
-                    user_name=user_name,
-                    trigger_plan_key=trigger_plan_key,
-                    build_reason=build['buildReason']
+        try:
+            for artifact in result['deploymentVersion']['items']:
+                log.info('Getting info for plan: {}'.format(artifact))
+                plan_key = artifact['planResultKey']['key']
+                if not plan_key.startswith('DELETED_'):
+                    build = self.bamboo.results(plan_key, expand=None)
+                    trigger, user_name, user_id, trigger_plan_key = TriggerReason(build['buildReason']).tuple
+                    build_reason = build['buildReason']
+                else:
+                    trigger, user_name, user_id, trigger_plan_key = '', '', '', plan_key
+                    build_reason = 'N/A'
+                details.append(
+                    dict(
+                        plan_key=plan_key,
+                        trigger=trigger,
+                        user_id=user_id,
+                        user_name=user_name,
+                        trigger_plan_key=trigger_plan_key,
+                        build_reason=build_reason
+                    )
                 )
-            )
+        except Exception as e:
+            log.error(e)
         return details
 
     def save_to_csv(self):
