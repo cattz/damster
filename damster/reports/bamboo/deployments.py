@@ -5,7 +5,6 @@ import json
 import os
 import jinja2
 import arrow
-import re
 from distutils.dir_util import mkpath
 
 
@@ -13,11 +12,6 @@ log = initialize_logger(__name__)
 
 
 class BambooDeploymentsReport(object):
-
-    re_MANUAL = re.compile(
-        r'Manual run by (?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?')
-    re_CHILD = re.compile(
-        r'Child of <a href="http[s]?:\/\/[^"]*">(.*)<\/a>')
 
     def __init__(self, cfg, from_date, to_date=None, name='bamboo_deployments_report'):
 
