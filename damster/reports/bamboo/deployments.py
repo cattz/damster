@@ -120,6 +120,9 @@ class BambooDeploymentsReport(object):
 
     def get_build_details_from_result(self, result):
         details = list()
+        if not('deploymentVersion' in result and 'items' in result['deploymentVersion']):
+            log.error('No version details available for {}'.format(result))
+            return details
         for artifact in result['deploymentVersion']['items']:
             log.info('Getting info for plan: {}'.format(artifact))
             plan_key = artifact['planResultKey']['key']
