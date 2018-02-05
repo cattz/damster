@@ -62,7 +62,7 @@ class TriggerReason(object):
 
         else:
             log.error('No regex matching: {}'.format(self.msg))
-            #raise ValueError('No regex matching: {}'.format(self.msg))
+            # raise ValueError('No regex matching: {}'.format(self.msg))
             return '', '', '', ''
 
     @property
