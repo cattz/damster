@@ -19,47 +19,43 @@ class TriggerReason(object):
     source = re.compile(
         r'Changes by (?:<a href="http[s]?:\/\/[^=]*=(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?'
     )
+    rebuilt = re.compile(
+        r'Rebuilt by (?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?'
+    )
 
     def __init__(self, msg):
 
         self.msg = msg
-        self.trigger_type = None  # Commit, Scheduled, Manual, Child
-        self.user_id = None
-        self.user_name = None
-        self.build_key = None
+        self.trigger_type, self.user_id, self.user_name, self.build_key = self.parse()
 
-        self.parse()
-
-    # TODO: This needs refactoring
     def parse(self):
         if self.msg.startswith('Code has changed'):
-            self.trigger_type = 'Commit'
-            self.user_id = self.user_name = self.build_key = ''
-        elif self.msg.startswith('Scheduled'):
-            self.trigger_type = 'Scheduled'
-            self.user_id = self.user_name = self.build_key = ''
+            return 'Commit', '', '', ''
+
+        if self.msg.startswith('Scheduled'):
+            return 'Scheduled', '', '', ''
+
+        found = re.search(self.manual, self.msg)
+        if found:
+            user_id = found.group('user_id') or found.group('user_name')
+            return 'Manual', user_id, found.group('user_name'), ''
+
+        found = re.search(self.child, self.msg)
+        if found:
+            return 'Child', '', '', found.group('parent_plan')
+
+        found = re.search(self.source, self.msg)
+        if found:
+            user_id = found.group('user_id') or found.group('user_name')
+            return 'Commit', user_id,  found.group('user_name'), ''
+
+        found = re.search(self.rebuilt, self.msg)
+        if found:
+            user_id = found.group('user_id') or found.group('user_name')
+            return 'Rebuilt', user_id,  found.group('user_name'), ''
+
         else:
-            found = re.search(self.manual, self.msg)
-            if found:
-                self.trigger_type = 'Manual'
-                self.user_name = found.group('user_name')
-                self.user_id = found.group('user_id') or self.user_name
-                self.build_key = ''
-            else:
-                found = re.search(self.child, self.msg)
-                if found:
-                    self.trigger_type = 'Child'
-                    self.user_id = self.user_name = ''
-                    self.build_key = found.group('parent_plan')
-                else:
-                    found = re.search(self.source, self.msg)
-                    if found:
-                        self.trigger_type = 'Commit'
-                        self.user_name = found.group('user_name')
-                        self.user_id = found.group('user_id') or self.user_name
-                        self.build_key = ''
-                    else:
-                        raise ValueError('No regex matching: {}'.format(self.msg))
+            raise ValueError('No regex matching: {}'.format(self.msg))
 
     @property
     def tuple(self):

@@ -10,7 +10,9 @@ class TestParseTriggerReason(object):
         ('Code has changed', ('Commit', '', '', '')),
         ('Scheduled', ('Scheduled', '', '', '')),
         ('Changes by <a href="http://url/viewUserSummary.action?currentUserName=usid">Last, Fisrt</a>',
-         ('Commit', 'Last, Fisrt', 'usid', ''))
+         ('Commit', 'Last, Fisrt', 'usid', '')),
+        ('Rebuilt by <a href="https://foo.bar.com/bamboo/browse/user/jsnow">John Snow</a>',
+         ('Rebuilt', 'John Snow', 'jsnow', ''))
     ]
 
     def test_dummy(self):
