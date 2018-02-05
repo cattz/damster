@@ -16,7 +16,10 @@ class TestParseTriggerReason(object):
         ('Rebuilt      by <a href="https://foo.bar.com/bamboo/browse/user/mward">M Ward</a>',
          ('Rebuilt', 'M Ward', 'mward', '')),
         ('Code changes detected', ('Commit', '', '', '')),
-        ('First build for this plan', ('First build', '', '', ''))
+        ('First build for this plan', ('First build', '', '', '')),
+        ('Triggered by <a href="https://foobar.com/bamboo/deploy/viewDeploymentResult.action?'
+         'deploymentResultId=1122334455">Some Deployment Project &rsaquo; Test</a>',
+         ('Child', '', '', 'Some Deployment Project &rsaquo; Test'))
     ]
 
     def test_dummy(self):

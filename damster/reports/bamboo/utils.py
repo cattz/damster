@@ -18,7 +18,7 @@ class TriggerReason(object):
     manual = re.compile(
         r'Manual run by (?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?')
     child = re.compile(
-        r'Child\s+of\s+<a href="http[s]?:\/\/[^"]*">(?P<parent_plan>.*)<\/a>')
+        r'(?:Child\s+of\s+|Triggered\s+by\s+)<a href="http[s]?:\/\/[^"]*">(?P<parent_plan>.*)<\/a>')
     source = re.compile(
         r'Changes\s+by\s+(?:<a href="http[s]?:\/\/[^=]*=(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?'
     )
