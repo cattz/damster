@@ -1,4 +1,4 @@
-from damster.utils import initialize_logger
+from damster.utils import initialize_logger, time_to_excel
 from damster.reports.bamboo.utils import TriggerReason
 from atlassian import Bamboo
 import json
@@ -178,10 +178,10 @@ class BambooDeploymentsReport(object):
                             project['prj_name'],
                             project['prj_plan'],
                             environment['env_name'],
-                            result['started'],
-                            result['finished'],
-                            result['queued'],
-                            result['executed'],
+                            time_to_excel(result['started']),
+                            time_to_excel(result['finished']),
+                            time_to_excel(result['queued']),
+                            time_to_excel(result['executed']),
                             result['version_name'],
                             result['deployment_type'],
                             result['deployment_trigger_user'].replace(', ', '; '),

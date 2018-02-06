@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import pkg_resources
+import arrow
 
 from configparser import ConfigParser, ExtendedInterpolation
 
@@ -52,3 +53,9 @@ def get_config():
     config.read_file(open(defaults))
     config.read(['damster.cfg', os.path.expanduser('~/.config/damster.cfg')])
     return config
+
+
+def time_to_excel(tm):
+    temp = arrow.get('1899-12-30')  # Note, not 31st Dec but 30th!
+    delta = arrow.get(tm) - temp
+    return str(float(delta.days) + (float(delta.seconds) / 86400))
