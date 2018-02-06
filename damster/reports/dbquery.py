@@ -17,11 +17,11 @@ class GenericDB(object):
         self.name = name
         self.cfg = cfg
         self.db_settings = self.cfg[db_settings_section]
-        self.ssh_tunnel = self.start_ssh_tunel() if use_ssh_tunnel else None
+        self.ssh_tunnel = self.start_ssh_tunnel() if use_ssh_tunnel else None
         self.db = self.connect()
         self.cur = self.db.cursor()
 
-    def start_ssh_tunel(self):
+    def start_ssh_tunnel(self):
         ssh_settings = self.cfg['SSH']
         host = self.db_settings['host']
         port = ssh_settings.get('port', 22)
