@@ -7,6 +7,8 @@
                 <span class="badge badge-error">{{ summary.failed }}</span>
                 <span class="badge badge-info">{{ summary.in_progress }}</span>
         </h1>
+<hr>
+        <div class="container-fluid">
             {% for project in deployments %}
             <div class="panel-group" id="prj-{{ project.prj_id}}">
                 <div class="panel panel-default">
@@ -48,10 +50,10 @@
                                                     <th>Started</th>
                                                     <th>Finished</th>
                                                     <th>Version</th>
-                                                    <th>Trigger</th>
-                                                    <th>Linked Build</th>
-                                                    <th>Build reason</th>
-                                                    <th>Build result</th>
+                                                    <th>Deployment Trigger</th>
+                                                    <th>Linked Build/Env</th>
+                                                    <th>Build Trigger</th>
+                                                    <th>Release build</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="">
@@ -64,7 +66,7 @@
                                                     {% else %}
                                                         <td class="btn-info">
                                                     {% endif %}
-                                                    <a href="{{ summary.bamboo_url }}/deploy/viewDeploymentResult.action?deploymentResultId={{ result.id }}">
+                                                    <a href="{{ summary.bamboo_url }}/deploy/viewDeploymentResult.action?deploymentResultId={{ result.id }}" target="_blank">
                                                         {{ result.state }}</a>
                                                     </td>
                                                     <td>{{ result.started }}</td>
@@ -95,5 +97,6 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
 
 {% endblock %}
