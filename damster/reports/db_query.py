@@ -12,6 +12,9 @@ class GenericDB(object):
     """
     Generic DB query object
     """
+    table_columns = ()
+
+    query = ''
 
     def __init__(self, cfg, db_settings_section='Common', name='generic_db_query', use_ssh_tunnel=False):
         self.name = name
@@ -20,6 +23,7 @@ class GenericDB(object):
         self.ssh_tunnel = self.start_ssh_tunnel() if use_ssh_tunnel else None
         self.db = self.connect()
         self.cur = self.db.cursor()
+        self.report = None
 
     def start_ssh_tunnel(self):
         ssh_settings = self.cfg['SSH']
@@ -53,15 +57,19 @@ class GenericDB(object):
         log.info('Connecting to db {dbname} at {host}:{port}'.format(**locals()))
         return psycopg2.connect(cons)
 
-    def query(self, query):
-        self.cur.execute(query)
-        return self.cur
-
     @property
     def output_folder(self):
         return os.path.join(
             self.cfg['Reports']['destination_folder'],
             self.name)
+
+    def generate_report(self):
+        if not self.report:
+            self.cur.execute(self.query)
+            results = list()
+            for row in self.cur.fetchall():
+                results.append(dict(zip(self.table_columns, row)))
+            self.report = results
 
     def output_file(self, ext='json'):
         return os.path.join(
@@ -69,8 +77,8 @@ class GenericDB(object):
             '{}.{}'.format(self.name, ext)
         )
 
-    def save_to_csv(self, query, output_file=None):
-        csv_query = "COPY ({0}) TO STDOUT WITH CSV HEADER".format(query)
+    def save_to_csv(self, output_file=None):
+        csv_query = "COPY ({0}) TO STDOUT WITH CSV HEADER".format(self.query)
         csv_file = output_file or self.output_file('csv')
         log.info('Saving query results to CSV file: {}'.format(csv_file))
         mkpath(os.path.dirname(csv_file))

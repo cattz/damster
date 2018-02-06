@@ -1,2 +1,2 @@
 from .deployments import BambooDeploymentsReport
-from .dbquery import BambooDB
+from .db_deployment_permissions import BambooDBDeploymentPermissions
