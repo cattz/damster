@@ -25,8 +25,8 @@ class GenericDB(object):
         ssh_settings = self.cfg['SSH']
         host = self.db_settings['host']
         port = ssh_settings.get('port', 22)
-        remote_bind_address=(host, int(self.db_settings.get('port')), 5432)
-        local_bind_address=('localhost', int(ssh_settings.get('local_bind_port', 6543)))
+        remote_bind_address = ('localhost', int(self.db_settings.get('port', 5432)))
+        local_bind_address = ('localhost', int(ssh_settings.get('local_bind_port', 6543)))
         tunnel = SSHTunnelForwarder(
             (host, port),
             ssh_username=ssh_settings.get('ssh_username', getuser()),
