@@ -57,5 +57,8 @@ def get_config():
 
 def time_to_excel(tm):
     temp = arrow.get('1899-12-30')  # Note, not 31st Dec but 30th!
-    delta = arrow.get(tm) - temp
+    try:
+        delta = arrow.get(tm) - temp
+    except ParserError:
+        return ''
     return str(float(delta.days) + (float(delta.seconds) / 86400))
