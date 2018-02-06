@@ -28,7 +28,8 @@ setup(
         'influxdb',
         'schedule',
         'jinja2',
-        'psycopg2'
+        'psycopg2',
+        'sshtunnel'
     ],
     extras_require={
         'dev': [
