@@ -75,12 +75,12 @@
                                                     <td>{{ result.deployment_type_raw }}</td>
                                                     <td><a href="{{ summary.bamboo_url }}/browse/{{ result.deployment_trigger_build }}">{{ result.deployment_trigger_build }}</a></td>
                                                     <td>
-                                                        {% for detail in result.details %} {{ detail.build_reason }}
+                                                        {% for detail in result.details %} <p>{{ detail.build_reason }}</p>
                                                         {% endfor %}
                                                     </td>
                                                     <td>
                                                         {% for detail in result.details %}
-                                                        <a href="{{ summary.bamboo_url }}/browse/{{ detail.plan_key }}">{{ detail.plan_key }}</a>
+                                                        <p><a href="{{ summary.bamboo_url }}/browse/{{ detail.plan_key }}">{{ detail.plan_key }}</a></p>
                                                         {% endfor %}
                                                     </td>
                                                 </tr>

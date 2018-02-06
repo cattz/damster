@@ -27,7 +27,7 @@ def initialize_logger(module_name):
               'INFO': logging.INFO,
               'WARNING': logging.WARNING,
               'ERROR': logging.ERROR}
-    log_level = levels[os.environ.get('bamboo_loglevel', 'DEBUG')]
+    log_level = levels[os.environ.get('bamboo_loglevel', 'WARNING')]
     logger = logging.getLogger(module_name)
 
     log_fmt_string = '%(asctime)-19s %(name)s: [%(levelname)-7s] - %(message)s'
