@@ -48,6 +48,7 @@ class BambooDeploymentsReport(object):
             '{}.{}'.format(self.name, ext)
         )
 
+    # TODO: Needs rtefactoring
     def generate_report(self):
         log.info('Starting report generation for deployment results between {} and {}'.format(
             self._string_to_time(self.from_date), self._string_to_time(self.to_date)
@@ -77,30 +78,7 @@ class BambooDeploymentsReport(object):
                         started_time = self._time_to_epoch(result['startedDate'])
                         if started_time > self.from_date:
                             if started_time < self.to_date:
-                                finished_time = self._time_to_epoch(result['finishedDate']) \
-                                    if 'finishedDate' in result else ''
-                                queued_time = self._time_to_epoch(result['queuedDate']) \
-                                    if 'queuedDate' in result else ''
-                                executed_time = self._time_to_epoch(result['executedDate']) \
-                                    if 'executedDate' in result else ''
-                                trigger, user_name, user_id, build_id = TriggerReason(result['reasonSummary']).tuple
-                                result_dict = dict(
-                                    id=result['id'],
-                                    started=self._string_to_time(started_time),
-                                    finished=self._string_to_time(finished_time),
-                                    queued=self._string_to_time(queued_time),
-                                    executed=self._string_to_time(executed_time),
-                                    state=result['deploymentState'],
-                                    version_name=result['deploymentVersionName'],
-                                    deployment_type=trigger,
-                                    deployment_type_raw=result['reasonSummary'],
-                                    deployment_trigger_user_id=user_id,
-                                    deployment_trigger_user=user_name,
-                                    deployment_trigger_build=build_id,
-                                    details=self.get_build_details_from_result(result)
-                                )
-                                log.debug('\t\t{}'.format(result_dict))
-                                env_dict['env_results'].append(result_dict)
+                                env_dict['env_results'].append(self.get_deploy_result_details(result))
                         else:
                             break  # Since results are ordered from newest, exit as soon as we find an older result
                 env_summary = dict(
@@ -117,6 +95,32 @@ class BambooDeploymentsReport(object):
             )
             report.append(project_dict)
         return report
+
+    def get_deploy_result_details(self, result):
+        finished_time = self._time_to_epoch(result['finishedDate']) \
+            if 'finishedDate' in result else ''
+        queued_time = self._time_to_epoch(result['queuedDate']) \
+            if 'queuedDate' in result else ''
+        executed_time = self._time_to_epoch(result['executedDate']) \
+            if 'executedDate' in result else ''
+        trigger, user_name, user_id, build_id = TriggerReason(result['reasonSummary']).tuple
+        result_dict = dict(
+            id=result['id'],
+            started=self._string_to_time(self._time_to_epoch(result['startedDate'])),
+            finished=self._string_to_time(finished_time),
+            queued=self._string_to_time(queued_time),
+            executed=self._string_to_time(executed_time),
+            state=result['deploymentState'],
+            version_name=result['deploymentVersionName'],
+            deployment_type=trigger,
+            deployment_type_raw=result['reasonSummary'],
+            deployment_trigger_user_id=user_id,
+            deployment_trigger_user=user_name,
+            deployment_trigger_build=build_id,
+            details=self.get_build_details_from_result(result)
+        )
+        log.debug('\t\t{}'.format(result_dict))
+        return result_dict
 
     def get_build_details_from_result(self, result):
         details = list()
