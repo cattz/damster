@@ -12,7 +12,7 @@ class BambooDBDeploymentPermissions(GenericDB):
 
     query = """
               SELECT
-                NAME as DeploymentProject,
+                Name as deployment_project,
                 AE.sid,
                 (CASE
                   WHEN AE.type = 'PRINCIPAL'
@@ -20,7 +20,7 @@ class BambooDBDeploymentPermissions(GenericDB):
                   WHEN AE.type = 'GROUP_PRINCIPAL'
                     THEN 'GROUP'
                   ELSE
-                     'ROLE' 
+                     'ROLE'
                 END) as user_or_group,
                 sum(mask) as mask
               FROM ACL_ENTRY AS AE
@@ -28,8 +28,9 @@ class BambooDBDeploymentPermissions(GenericDB):
                   ON AE.acl_object_identity = AOI.id
                 JOIN DEPLOYMENT_PROJECT ON deployment_project_id = object_id_identity
               GROUP BY
-                NAME, AE.sid, user_or_group
-              
+                deployment_project, AE.sid, user_or_group
+              ORDER BY
+                deployment_project
     """
     table_columns = (
         'deployment_project', 'user_or_group', 'permission_type', 'mask'
@@ -44,7 +45,7 @@ class BambooDBDeploymentPermissions(GenericDB):
     ]
 
     def __init__(self, cfg, db_settings_section='Bamboo DB',
-                 name='bamboo_dbquery_report',
+                 name='deployment_permissions',
                  use_ssh_tunnel=False):
         super(BambooDBDeploymentPermissions, self).__init__(cfg, db_settings_section, name,
                                                             use_ssh_tunnel=use_ssh_tunnel)
@@ -66,7 +67,3 @@ class BambooDBDeploymentPermissions(GenericDB):
         mkpath(self.output_folder)
         with open(out_csv, 'w') as outfile:
             outfile.write('\n'.join(lines))
-
-
-
-
