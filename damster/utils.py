@@ -3,7 +3,7 @@ import os
 import sys
 import pkg_resources
 import arrow
-
+from arrow.parser import ParserError
 from configparser import ConfigParser, ExtendedInterpolation
 
 
