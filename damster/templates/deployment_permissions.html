@@ -19,6 +19,7 @@
                                     <thead>
                                         <tr>
                                             <th>Entity Name</th>
+                                            <th>Display Name</th>
                                             <th>Entity Type</th>
                                             <th>View</th>
                                             <th>Edit</th>
@@ -30,6 +31,9 @@
                                     <tr>
                                         <td>
                                             {{ perm.entity_name }}
+                                        </td>
+                                        <td>
+                                            {{ perm.display_name }}
                                         </td>
                                         <td>
                                             {{ perm.entity_type }}
@@ -60,6 +64,7 @@
                                         <tr>
                                             <th>Entity Name</th>
                                             <th>Entity Type</th>
+                                            <th>Display Name</th>
                                             <th>View</th>
                                             <th>Edit</th>
                                             <th>Deploy</th>
@@ -70,6 +75,9 @@
                                             <tr>
                                                 <td>
                                                     {{ perm.entity_name }}
+                                                </td>
+                                                <td>
+                                                    {{ perm.display_name }}
                                                 </td>
                                                 <td>
                                                     {{ perm.entity_type }}
