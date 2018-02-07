@@ -110,7 +110,9 @@ class GenericDB(object):
         jinja_env = jinja2.Environment(loader=jinja2.PackageLoader('damster', 'templates'))
         template = jinja_env.get_template(template_name)
 
-        html = template.render(deployments=self.report, **args)
+        log.debug('Using template {}'.format(template))
+
+        html = template.render(report=self.report, **args)
         mkpath(self.output_folder)
         with open(out_html, 'w') as outfile:
             outfile.write(html)

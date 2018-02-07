@@ -1,0 +1,116 @@
+{% extends "bootstrap_base.html" %}
+
+{% block content %}
+
+        <h1>Bamboo Deployment Permissions</h1>
+        <hr>
+        <div class="container-fluid">
+            {% for pr_name, project in report.items() %}
+            <div class="panel-group" id="prj-{{ project.id}}">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#prj-{{ project.id}}" href="#prj-{{ project.id}}-perms">
+                                {{ pr_name }} </a>
+                        </h2>
+                        <div id="prj-{{ project.id}}-perms" class="panel-collapse collapse">
+                            <h3>Project level permissions</h3>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Entity Name</th>
+                                            <th>Entity Type</th>
+                                            <th>View</th>
+                                            <th>Edit</th>
+                                            <th>Deploy</th>
+                                            <th>Admin</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for perm in project.permissions %}
+                                    <tr>
+                                        <td>
+                                            {{ perm.entity_name }}
+                                        </td>
+                                        <td>
+                                            {{ perm.entity_type }}
+                                        </td>
+                                        <td>
+                                            {% if perm.view %}
+                                            <p class="text-green">X</p>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if perm.edit %}
+                                            <p class="text-green">X</p>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if perm.deploy %}
+                                            <p class="text-green">X</p>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if perm.admin %}
+                                            <p class="text-green" >X</p>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% for env_name, env_perms in project.environments.items() %}
+                                <h3>Environment: {{ env_name }}</h3>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Entity Name</th>
+                                            <th>Entity Type</th>
+                                            <th>View</th>
+                                            <th>Edit</th>
+                                            <th>Deploy</th>
+                                            <th>Admin</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for perm in env_perms %}
+                                            <tr>
+                                                <td>
+                                                    {{ perm.entity_name }}
+                                                </td>
+                                                <td>
+                                                    {{ perm.entity_type }}
+                                                </td>
+                                                <td>
+                                                    {% if perm.view %}
+                                                    <p class="text-green">X</p>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if perm.edit %}
+                                                    <p class="text-green">X</p>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if perm.deploy %}
+                                                    <p class="text-green">X</p>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if perm.admin %}
+                                                    <p class="text-green">X</p>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+{% endblock %}
