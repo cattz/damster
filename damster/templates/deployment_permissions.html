@@ -23,7 +23,6 @@
                                             <th>View</th>
                                             <th>Edit</th>
                                             <th>Deploy</th>
-                                            <th>Admin</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -50,11 +49,6 @@
                                             <p class="text-green">X</p>
                                             {% endif %}
                                         </td>
-                                        <td>
-                                            {% if perm.admin %}
-                                            <p class="text-green" >X</p>
-                                            {% endif %}
-                                        </td>
                                     </tr>
                                     {% endfor %}
                                     </tbody>
@@ -69,7 +63,6 @@
                                             <th>View</th>
                                             <th>Edit</th>
                                             <th>Deploy</th>
-                                            <th>Admin</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -93,11 +86,6 @@
                                                 </td>
                                                 <td>
                                                     {% if perm.deploy %}
-                                                    <p class="text-green">X</p>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {% if perm.admin %}
                                                     <p class="text-green">X</p>
                                                     {% endif %}
                                                 </td>

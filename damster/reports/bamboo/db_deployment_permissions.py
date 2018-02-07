@@ -72,9 +72,10 @@ class BambooDBDeploymentPermissions(GenericDB):
         permissions = [
             ('view', 1),
             ('edit', 2),
-            ('admin', 16),
             ('deploy', 64),
-            # No clone for deployments('clone', 128)
+            # No clone or admin for deployments(
+            # ('admin', 16),
+            # ('clone', 128)
         ]
         perms = dict()
         for perm, int_mask in permissions:
@@ -119,17 +120,17 @@ class BambooDBDeploymentPermissions(GenericDB):
     def save_to_csv(self, output_file=None):
         out_csv = output_file or self.output_file(ext='csv')
         log.info('Saving to CSV file {}'.format(out_csv))
-        lines = ['deployment_project,environment_name,entity_name,entity_type,view,edit,deploy,admin']
+        lines = ['deployment_project,environment_name,entity_name,entity_type,view,edit,deploy']
         for deployment_project in self.report:
             line = '{},{},_PROJECT_,'.format(self.report[deployment_project]['id'], deployment_project)
             for project_permission in self.report[deployment_project]['permissions']:
                 lines.append(
-                    line + '{entity_name},{entity_type},{view},{edit},{deploy},{admin}'.format(**project_permission))
+                    line + '{entity_name},{entity_type},{view},{edit},{deploy}'.format(**project_permission))
             for environment in self.report[deployment_project]['environments']:
                 line = '{},{},{},'.format(self.report[deployment_project]['id'], deployment_project, environment)
                 for env_permission in self.report[deployment_project]['environments'][environment]:
                     lines.append(
-                        line + '{entity_name},{entity_type},{view},{edit},{deploy},{admin}'.format(**env_permission))
+                        line + '{entity_name},{entity_type},{view},{edit},{deploy}'.format(**env_permission))
 
         mkpath(self.output_folder)
         with open(out_csv, 'w') as outfile:
