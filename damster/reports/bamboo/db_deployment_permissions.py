@@ -12,7 +12,8 @@ class BambooDBDeploymentPermissions(GenericDB):
 
     query_project = """
               SELECT
-                Name as deployment_project,
+                DP.name as deployment_project,
+                DP.deployment_project_id as deployment_project_id,
                 AE.sid  as entity_name,
                 (CASE
                   WHEN AE.type = 'PRINCIPAL'
@@ -26,15 +27,16 @@ class BambooDBDeploymentPermissions(GenericDB):
               FROM ACL_ENTRY AS AE
                 JOIN ACL_OBJECT_IDENTITY AS AOI
                   ON AE.acl_object_identity = AOI.id
-                JOIN DEPLOYMENT_PROJECT ON deployment_project_id = object_id_identity
+                JOIN DEPLOYMENT_PROJECT DP ON deployment_project_id = object_id_identity
               GROUP BY
-                deployment_project, entity_name, entity_type
+                deployment_project, deployment_project_id, entity_name, entity_type
               ORDER BY
                 deployment_project
     """
     query_environment = """
             SELECT
                 DP.name as deployment_project,
+                DP.deployment_project_id as deployment_project_id,
                 DE.name as deployment_environment,
                 AE.sid as entity_name,
                 (CASE
@@ -54,7 +56,7 @@ class BambooDBDeploymentPermissions(GenericDB):
             JOIN DEPLOYMENT_PROJECT DP
                 ON DE.package_definition_id = DP. deployment_project_id
             GROUP BY
-                deployment_project, deployment_environment, entity_type, entity_name
+                deployment_project, deployment_project_id, deployment_environment, entity_type, entity_name
             ORDER BY
                 deployment_project
             """
@@ -84,9 +86,10 @@ class BambooDBDeploymentPermissions(GenericDB):
 
         # First get the project permissions
         dep_projects_perms = self.exec_query(query=self.query_project)
-        for deployment_project, entity_name,  entity_type, mask in dep_projects_perms:
+        for deployment_project, id, entity_name,  entity_type, mask in dep_projects_perms:
             if deployment_project not in report:
                 report[deployment_project] = dict(
+                    id=id,
                     permissions=list(),
                     environments=dict()
                 )
@@ -97,9 +100,10 @@ class BambooDBDeploymentPermissions(GenericDB):
 
         # Second, get the environment permissions
         dep_environments_perms = self.exec_query(self.query_environment)
-        for deployment_project, deployment_environment, entity_name, entity_type, mask in dep_environments_perms:
+        for deployment_project, id, deployment_environment, entity_name, entity_type, mask in dep_environments_perms:
             if deployment_project not in report:
                 report[deployment_project] = dict(
+                    id=id,
                     prj_permissions=list(),
                     environments=dict()
                 )
@@ -117,12 +121,12 @@ class BambooDBDeploymentPermissions(GenericDB):
         log.info('Saving to CSV file {}'.format(out_csv))
         lines = ['deployment_project,environment_name,entity_name,entity_type,view,edit,deploy,admin']
         for deployment_project in self.report:
-            line = '{},_PROJECT_,'.format(deployment_project)
+            line = '{},{},_PROJECT_,'.format(self.report[deployment_project]['id'], deployment_project)
             for project_permission in self.report[deployment_project]['permissions']:
                 lines.append(
                     line + '{entity_name},{entity_type},{view},{edit},{deploy},{admin}'.format(**project_permission))
             for environment in self.report[deployment_project]['environments']:
-                line = '{},{},'.format(deployment_project, environment)
+                line = '{},{},{},'.format(self.report[deployment_project]['id'], deployment_project, environment)
                 for env_permission in self.report[deployment_project]['environments'][environment]:
                     lines.append(
                         line + '{entity_name},{entity_type},{view},{edit},{deploy},{admin}'.format(**env_permission))
