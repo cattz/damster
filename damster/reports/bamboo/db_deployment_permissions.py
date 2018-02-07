@@ -88,7 +88,7 @@ class BambooDBDeploymentPermissions(GenericDB):
     def _get_display_name(self, user_id):
         try:
             user_details = self.crowd.user(user_id)
-            return user_details['displayName']
+            return user_details['display-name']
         except Exception:
             return user_id
 
@@ -107,7 +107,7 @@ class BambooDBDeploymentPermissions(GenericDB):
             permission = self._mask_to_dict(mask)
             permission['entity_name'] = entity_name
             permission['entity_type'] = entity_type
-            permission['display_name'] = self._get_display_name(entity_name)
+            permission['display_name'] = self._get_display_name(entity_name) if entity_type == 'USER' else entity_name
             report[deployment_project]['permissions'].append(permission)
 
         # Second, get the environment permissions
@@ -124,7 +124,7 @@ class BambooDBDeploymentPermissions(GenericDB):
             permission = self._mask_to_dict(mask)
             permission['entity_name'] = entity_name
             permission['entity_type'] = entity_type
-            permission['display_name'] = self._get_display_name(entity_name)
+            permission['display_name'] = self._get_display_name(entity_name) if entity_type == 'USER' else entity_name
             report[deployment_project]['environments'][deployment_environment].append(permission)
 
         return report
@@ -137,12 +137,12 @@ class BambooDBDeploymentPermissions(GenericDB):
             line = '{},{},_PROJECT_,'.format(self.report[deployment_project]['id'], deployment_project)
             for project_permission in self.report[deployment_project]['permissions']:
                 lines.append(
-                    line + '{entity_name},{display_name},{entity_type},{view},{edit},{deploy}'.format(**project_permission))
+                    line + '"{entity_name}","{display_name}",{entity_type},{view},{edit},{deploy}'.format(**project_permission))
             for environment in self.report[deployment_project]['environments']:
                 line = '{},{},{},'.format(self.report[deployment_project]['id'], deployment_project, environment)
                 for env_permission in self.report[deployment_project]['environments'][environment]:
                     lines.append(
-                        line + '{entity_name},{display_name},{entity_type},{view},{edit},{deploy}'.format(**env_permission))
+                        line + '"{entity_name}","{display_name}",{entity_type},{view},{edit},{deploy}'.format(**env_permission))
 
         mkpath(self.output_folder)
         with open(out_csv, 'w') as outfile:
