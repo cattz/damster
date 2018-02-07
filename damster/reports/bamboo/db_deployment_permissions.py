@@ -33,10 +33,10 @@ class BambooDBDeploymentPermissions(GenericDB):
                 deployment_project
     """
     query_environment = """
-            SELECT 
-                DP.name as deployment_project, 
+            SELECT
+                DP.name as deployment_project,
                 DE.name as deployment_environment,
-                AE.sid as entity_name,         
+                AE.sid as entity_name,
                 (CASE
                     WHEN AE.type = 'PRINCIPAL'
                        THEN 'USER'
@@ -49,11 +49,11 @@ class BambooDBDeploymentPermissions(GenericDB):
             FROM ACL_ENTRY AS AE
             JOIN ACL_OBJECT_IDENTITY AS AOI
                 ON AE.acl_object_identity = AOI.id
-            JOIN DEPLOYMENT_ENVIRONMENT DE 
+            JOIN DEPLOYMENT_ENVIRONMENT DE
                 ON DE.environment_id = object_id_identity
-            JOIN DEPLOYMENT_PROJECT DP 
+            JOIN DEPLOYMENT_PROJECT DP
                 ON DE.package_definition_id = DP. deployment_project_id
-            GROUP BY 
+            GROUP BY
                 deployment_project, deployment_environment, entity_type, entity_name
             ORDER BY
                 deployment_project
