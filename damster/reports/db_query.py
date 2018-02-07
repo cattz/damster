@@ -2,7 +2,9 @@ from damster.utils import initialize_logger
 from sshtunnel import SSHTunnelForwarder
 from getpass import getuser
 import psycopg2
+import jinja2
 import os
+import json
 from distutils.dir_util import mkpath
 
 log = initialize_logger(__name__)
@@ -23,7 +25,7 @@ class GenericDB(object):
         self.ssh_tunnel = self.start_ssh_tunnel() if use_ssh_tunnel else None
         self.db = self.connect()
         self.cur = self.db.cursor()
-        self.report = None
+        self._report = None
 
     def start_ssh_tunnel(self):
         ssh_settings = self.cfg['SSH']
@@ -63,13 +65,22 @@ class GenericDB(object):
             self.cfg['Reports']['destination_folder'],
             self.name)
 
+    def exec_query(self, query):
+        self.cur.execute(query)
+        return self.cur.fetchall()
+
     def generate_report(self):
-        if not self.report:
-            self.cur.execute(self.query)
-            results = list()
-            for row in self.cur.fetchall():
-                results.append(dict(zip(self.table_columns, row)))
-            self.report = results
+        self.cur.execute(self.query)
+        results = list()
+        for row in self.cur.fetchall():
+            results.append(dict(zip(self.table_columns, row)))
+        return results
+
+    @property
+    def report(self):
+        if not self._report:
+            self._report = self.generate_report()
+        return self._report
 
     def output_file(self, ext='json'):
         return os.path.join(
@@ -84,6 +95,25 @@ class GenericDB(object):
         mkpath(os.path.dirname(csv_file))
         with open(csv_file, 'w') as f:
             self.cur.copy_expert(csv_query, f)
+
+    def save_to_json(self):
+        out_json = self.output_file()
+        log.info('Saving to JSON: {}'.format(out_json))
+        mkpath(self.output_folder)
+        with open(out_json, 'w') as outfile:
+            json.dump(self.report, outfile)
+
+    def save_to_html(self, template_name=None, **args):
+        out_html = self.output_file(ext='html')
+        log.info('Saving to HTML: {}'.format(out_html))
+        template_name = template_name or self.name + '.html'
+        jinja_env = jinja2.Environment(loader=jinja2.PackageLoader('damster', 'templates'))
+        template = jinja_env.get_template(template_name)
+
+        html = template.render(deployments=self.report, **args)
+        mkpath(self.output_folder)
+        with open(out_html, 'w') as outfile:
+            outfile.write(html)
 
     def __del__(self):
         self.cur.close()

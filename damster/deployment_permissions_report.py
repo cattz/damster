@@ -10,9 +10,9 @@ cfg = get_config()
 
 def main():
 
-    bamboodb = BambooDBDeploymentPermissions(cfg, use_ssh_tunnel=False)
-    bamboodb.generate_report()
-    bamboodb.save_to_csv()
+    bamboo_report = BambooDBDeploymentPermissions(cfg, use_ssh_tunnel=False)
+    bamboo_report.save_to_csv()
+    bamboo_report.save_to_json()
 
 
 if __name__ == "__main__":
