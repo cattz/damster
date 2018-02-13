@@ -62,3 +62,22 @@ def time_to_excel(tm):
     except ParserError:
         return ''
     return str(float(delta.days) + (float(delta.seconds) / 86400))
+
+
+def time_delta(t1, t2, excel=True):
+    try:
+        at1 = arrow.get(t1)
+        at2 = arrow.get(t2)
+        delta = at2 - at1
+        if excel:
+            delta = str(float(delta.days) + (float(delta.seconds) / 86400))
+        return delta
+    except ParserError:
+        if excel:
+            return '0'
+        return 0
+
+
+def quoted(it):
+    return '"{}"'.format(it)
+

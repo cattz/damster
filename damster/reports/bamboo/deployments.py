@@ -1,4 +1,4 @@
-from damster.utils import initialize_logger, time_to_excel
+from damster.utils import initialize_logger, time_to_excel, time_delta, quoted
 from damster.reports.bamboo.utils import TriggerReason
 from atlassian import Bamboo
 import json
@@ -48,7 +48,7 @@ class BambooDeploymentsReport(object):
             '{}.{}'.format(self.name, ext)
         )
 
-    # TODO: Needs rtefactoring
+    # TODO: Needs refactoring
     def generate_report(self):
         log.info('Starting report generation for deployment results between {} and {}'.format(
             self._string_to_time(self.from_date), self._string_to_time(self.to_date)
@@ -161,11 +161,14 @@ class BambooDeploymentsReport(object):
             'prj_name',
             'prj_plan_key',
             'env_name',
-            'successful'
+            'status',
             'started',
             'finished',
             'queued',
             'executed',
+            'total_time',
+            'time_in_queue',
+            'time_deploying',
             'version_name',
             'deployment_type',
             'deployment_trigger_user_name',
@@ -180,18 +183,21 @@ class BambooDeploymentsReport(object):
                     try:
                         line = ','.join([
                             str(project['prj_id']),
-                            project['prj_name'],
+                            quoted(project['prj_name']),
                             project['prj_plan'],
-                            environment['env_name'],
-                            result['state'].lower() == 'successful',
+                            quoted(environment['env_name']),
+                            result['state'],
                             time_to_excel(result['started']),
                             time_to_excel(result['finished']),
                             time_to_excel(result['queued']),
                             time_to_excel(result['executed']),
+                            time_delta(result['started'], result['finished']),
+                            time_delta(result['queued'], result['executed']),
+                            time_delta(result['executed'], result['finished']),
                             result['version_name'],
                             result['deployment_type'],
-                            result['deployment_trigger_user'],
-                            result['deployment_trigger_user_id'],
+                            quoted(result['deployment_trigger_user']),
+                            quoted(result['deployment_trigger_user_id']),
                             result['deployment_trigger_build'],
                             result['deployment_type_raw'].replace(', ', '; ').replace('\n', ' - ')
                         ])
