@@ -2,8 +2,7 @@ from damster.utils import initialize_logger
 from damster.reports.db_query import GenericDB
 from atlassian import Crowd
 
-import psycopg2
-import os
+
 from distutils.dir_util import mkpath
 
 log = initialize_logger(__name__)
