@@ -136,12 +136,14 @@ class BambooDBDeploymentPermissions(GenericDB):
             line = '{},{},_PROJECT_,'.format(self.report[deployment_project]['id'], deployment_project)
             for project_permission in self.report[deployment_project]['permissions']:
                 lines.append(
-                    line + '"{entity_name}","{display_name}",{entity_type},{view},{edit},{deploy}'.format(**project_permission))
+                    line + '"{entity_name}","{display_name}",{entity_type},{view},{edit},{deploy}'.format(
+                        **project_permission))
             for environment in self.report[deployment_project]['environments']:
                 line = '{},{},{},'.format(self.report[deployment_project]['id'], deployment_project, environment)
                 for env_permission in self.report[deployment_project]['environments'][environment]:
                     lines.append(
-                        line + '"{entity_name}","{display_name}",{entity_type},{view},{edit},{deploy}'.format(**env_permission))
+                        line + '"{entity_name}","{display_name}",{entity_type},{view},{edit},{deploy}'.format(
+                            **env_permission))
 
         mkpath(self.output_folder)
         with open(out_csv, 'w') as outfile:

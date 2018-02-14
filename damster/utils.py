@@ -80,4 +80,3 @@ def time_delta(t1, t2, excel=True):
 
 def quoted(it):
     return '"{}"'.format(it)
-
