@@ -3,6 +3,8 @@ from damster.reports.bamboo.utils import TriggerReason
 from damster.reports.base_report import BaseReport
 from atlassian import Bamboo
 import arrow
+import jinja2
+from distutils.dir_util import mkpath
 
 log = initialize_logger(__name__)
 
@@ -99,3 +101,30 @@ class BambooBuildsReport(BaseReport):
                     report.append(project_dict)
             self._report = report
         return self._report
+
+    def save_to_html(self, template_name=None):
+        out_html = self.output_file(ext='html')
+        log.info('Saving to HTML: {}'.format(out_html))
+        template_name = template_name or self.name + '.html'
+        jinja_env = jinja2.Environment(loader=jinja2.PackageLoader('damster', 'templates'))
+        template = jinja_env.get_template(template_name)
+
+        summary = dict(
+            projects=len(self.report),
+            #  successful=sum([pl['successful'] for pl in [pr['plans'] for pr in self.report]]),
+            #  failed=sum([pl['failed'] for pl in [pr['plans'] for pr in self.report]]),
+            #  unknown=sum([pl['unknown'] for pl in [pr['plans'] for pr in self.report]]),
+            from_date=self._time_to_string(self.from_date, fmt='YYYY/MM/DD'),
+            to_date=self._time_to_string(self.to_date, fmt='YYYY/MM/DD'),
+            bamboo_url=self.bamboo.url
+        )
+
+        html = template.render(builds=self.report, summary=summary)
+        mkpath(self.output_folder)
+        with open(out_html, 'w') as outfile:
+            outfile.write(html)
+
+    def run_report(self, use_cache=True):
+        super(BambooBuildsReport, self).run_report(use_cache=use_cache)
+        #self.save_to_csv()
+        self.save_to_html()

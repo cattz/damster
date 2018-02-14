@@ -1,0 +1,39 @@
+{% extends "bootstrap_base.html" %}
+
+{% block content %}
+
+        <h1>Bamboo Builds between {{ summary.from_date }} and {{ summary.to_date}}</h1>
+        <hr>
+        <div class="container-fluid">
+            {% for project in builds %}
+            <div class="panel-group" id="prj-{{ project.key}}">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#prj-{{ project.key}}" href="#prj-{{ project.key}}-plans">
+                                {{ project.name}}</a>
+                        </h2>
+                    </div>
+                    <div id="prj-{{ project.key}}-plans" class="panel-collapse collapse">
+                        {% for plan in project.plans %}
+                        <div class="panel-heading" id="prj-{{ project.key}}-plan-{{ plan.short_key}}-h">
+                            <h3>{{ plan.short_name }}</h3>
+                            <div class="panel-group" id="prj-{{ project.key }}-plan-{{ plan.short_key }}">
+                                {% for branch in plan.branches %}
+                                    <h4>{{ branch.name }}</h4>
+                                    <div>
+                                        {% for result in branch.results %}
+                                        <p>{{ result.key}}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+{% endblock %}

@@ -15,7 +15,7 @@ def main():
         from_date='2018-01-01',
         to_date='2018-02-28'
     )
-    report.run_report(use_cache=False)
+    report.run_report(use_cache=True)
 
 
 if __name__ == "__main__":
