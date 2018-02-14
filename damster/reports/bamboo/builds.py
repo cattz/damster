@@ -86,6 +86,7 @@ class BambooBuildsReport(BaseReport):
                             plan_dict['branches'].append(branch_dict)
                     if plan_dict['branches']:
                         project_dict['plans'].append(plan_dict)
-                report.append(project_dict)
+                if project_dict['plans']:
+                    report.append(project_dict)
             self._report = report
         return self._report
