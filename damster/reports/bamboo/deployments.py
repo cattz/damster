@@ -96,7 +96,7 @@ class BambooDeploymentsReport(BaseReport):
             return details
         try:
             for artifact in result['deploymentVersion']['items']:
-                log.info('Getting info for plan: {}'.format(artifact))
+                log.debug('Getting info for plan: {}'.format(artifact))
                 plan_key = artifact['planResultKey']['key']
                 if not plan_key.startswith('DELETED_'):
                     build = self.bamboo.results(plan_key, expand=None)
