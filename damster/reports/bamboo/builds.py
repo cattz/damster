@@ -69,22 +69,31 @@ class BambooBuildsReport(BaseReport):
                                     result_dict['started'] = started_time_string
                                     result_dict['finished'] = result_details.get('buildCompletedTime', '')
                                     result_dict['duration'] = result_details.get('buildDuration', 0)
-                                    trigger, user_name, user_id, build_id = TriggerReason(result_details['reasonSummary']).tuple
+                                    trigger, user_name, user_id, build_id = TriggerReason(
+                                        result_details['reasonSummary']).tuple
                                     result_dict['trigger_raw'] = result_details['reasonSummary']
                                     result_dict['trigger_type'] = trigger
                                     result_dict['trigger_user'] = user_name
                                     result_dict['trigger_user_id'] = user_id
                                     result_dict['trigger_build'] = build_id
-                                    result_dict['stage_number'] = result_details['stages']['size']
-                                    result_dict['issue_number'] = result_details['jiraIssues']['size']
-                                    result_dict['artifact_number'] = result_details['artifacts']['size']
+                                    result_dict['number_stages'] = result_details['stages']['size']
+                                    result_dict['number_issues'] = result_details['jiraIssues']['size']
+                                    result_dict['number_artifacts'] = result_details['artifacts']['size']
                                     branch_dict['results'].append(result_dict)
-
                             else:
                                 break
+                            branch_dict['successful'] = len(
+                                [r for r in branch_dict['results'] if r['state'] == 'Successful'])
+                            branch_dict['failed'] = len(
+                                [r for r in branch_dict['results'] if r['state'] == 'Failed'])
+                            branch_dict['unknown'] = (len(branch_dict['results']) -
+                                                      branch_dict['failed'] - branch_dict['successful'])
                         if branch_dict['results']:
                             plan_dict['branches'].append(branch_dict)
                     if plan_dict['branches']:
+                        plan_dict['successful'] = sum([b['successful'] for b in plan_dict['branches']])
+                        plan_dict['failed'] = sum([b['failed'] for b in plan_dict['branches']])
+                        plan_dict['unknown'] = sum([b['unknown'] for b in plan_dict['branches']])
                         project_dict['plans'].append(plan_dict)
                 if project_dict['plans']:
                     report.append(project_dict)
