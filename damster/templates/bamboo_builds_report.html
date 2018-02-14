@@ -20,12 +20,42 @@
                             <h3>{{ plan.short_name }}</h3>
                             <div class="panel-group" id="prj-{{ project.key }}-plan-{{ plan.short_key }}">
                                 {% for branch in plan.branches %}
-                                    <h4>{{ branch.name }}</h4>
-                                    <div>
-                                        {% for result in branch.results %}
-                                        <p>{{ result.key}}</p>
-                                        {% endfor %}
-                                    </div>
+                                    <h4>{{ branch.name }}
+                                        {% if branch.successful > 0 %}
+                                            <span class="badge badge-success">{{ branch.successful }}</span>{% endif %}
+                                        {% if branch.failed > 0 %}
+                                            <span class="badge badge-error">{{ branch.failed }}</span>{% endif %}
+                                        {% if branch.unknown > 0 %}
+                                            <span class="badge badge-info">{{ branch.unknown }}</span>{% endif %}
+                                    </h4>
+                                    <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Status</th>
+                                                    <th>Started</th>
+                                                    <th>Finished</th>
+                                                    <th>Duration</th>
+                                                    <th>Trigger</th>
+                                                    <th>Stages</th>
+                                                    <th>Artifacts</th>
+                                                    <th>JIRA Issues</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="">
+                                                {% for result in branch.results %}
+                                                <tr>
+                                                    <td>{{ result.state}}</td>
+                                                    <td>{{ result.started}}</td>
+                                                    <td>{{ result.finished}}</td>
+                                                    <td>{{ result.duration}}</td>
+                                                    <td>{{ result.trigger_raw}}</td>
+                                                    <td>{{ result.number_stages}}</td>
+                                                    <td>{{ result.number_artifacts}}</td>
+                                                    <td>{{ result.number_issues}}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                    </table>
                                 {% endfor %}
                             </div>
                         </div>
