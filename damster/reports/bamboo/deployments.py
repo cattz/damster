@@ -199,7 +199,11 @@ class BambooDeploymentsReport(BaseReport):
             bamboo_url=self.bamboo.url
         )
 
-        html = template.render(deployments=report, summary=summary)
+        html = template.render(
+            deployments=report,
+            summary=summary,
+            **args
+        )
         mkpath(self.output_folder)
         with open(out_html, 'w') as outfile:
             outfile.write(html)
@@ -209,4 +213,4 @@ class BambooDeploymentsReport(BaseReport):
 
         self.save_to_csv()
 
-        self.save_to_html()
+        self.save_to_html(title='Bamboo Reports: Deployments')

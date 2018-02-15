@@ -102,7 +102,7 @@ class BambooBuildsReport(BaseReport):
             self._report = report
         return self._report
 
-    def save_to_html(self, template_name=None):
+    def save_to_html(self, template_name=None, **args):
         out_html = self.output_file(ext='html')
         log.info('Saving to HTML: {}'.format(out_html))
         template_name = template_name or self.name + '.html'
@@ -119,7 +119,11 @@ class BambooBuildsReport(BaseReport):
             bamboo_url=self.bamboo.url
         )
 
-        html = template.render(builds=self.report, summary=summary)
+        html = template.render(
+            builds=self.report,
+            summary=summary,
+            **args
+        )
         mkpath(self.output_folder)
         with open(out_html, 'w') as outfile:
             outfile.write(html)
@@ -127,4 +131,4 @@ class BambooBuildsReport(BaseReport):
     def run_report(self, use_cache=True):
         super(BambooBuildsReport, self).run_report(use_cache=use_cache)
         #  self.save_to_csv()
-        self.save_to_html()
+        self.save_to_html(title='Bamboo Reports: Builds')
