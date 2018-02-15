@@ -9,6 +9,12 @@ from distutils.dir_util import mkpath
 log = initialize_logger(__name__)
 
 
+def prettify_date_time(dt):
+    if len(dt) == 24:
+        return dt[:-5].replace('T', ' ')
+    return dt
+
+
 class BambooBuildsReport(BaseReport):
 
     def __init__(self, cfg, from_date, to_date=None, name='bamboo_builds_report'):
@@ -68,8 +74,9 @@ class BambooBuildsReport(BaseReport):
                             if started_time > self.from_date:
                                 if started_time < self.to_date:
                                     log.debug(result_details)
-                                    result_dict['started'] = started_time_string
-                                    result_dict['finished'] = result_details.get('buildCompletedTime', '')
+                                    result_dict['started'] = prettify_date_time(started_time_string)
+                                    result_dict['finished'] = prettify_date_time(
+                                        result_details.get('buildCompletedTime', ''))
                                     result_dict['duration'] = result_details.get('buildDuration', 0)
                                     trigger, user_name, user_id, build_id = TriggerReason(
                                         result_details['reasonSummary']).tuple
