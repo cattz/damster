@@ -181,7 +181,7 @@ class BambooDeploymentsReport(BaseReport):
         return [prj for prj in self.report if sum(
             [prj['summary']['successful'], prj['summary']['failed'], prj['summary']['in_progress']]) > 0]
 
-    def save_to_html(self, template_name=None, filter_empty=True):
+    def save_to_html(self, template_name=None, filter_empty=True, **args):
         out_html = self.output_file(ext='html')
         log.info('Saving to HTML: {}'.format(out_html))
         template_name = template_name or self.name + '.html'
