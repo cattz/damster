@@ -127,7 +127,7 @@ class BambooBuildsReport(BaseReport):
         )
 
         html = template.render(
-            builds=self.report,
+            report=self.report,
             summary=summary,
             **args
         )

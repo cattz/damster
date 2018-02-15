@@ -5,36 +5,48 @@
         <h1>Bamboo Builds between {{ summary.from_date }} and {{ summary.to_date}}</h1>
         <hr>
         <div class="container-fluid">
-            {% for project in builds %}
-            <div class="panel-group" id="prj-{{ project.key}}">
+            {% for project in report %}
+            <div class="panel-group" id="prj-{{ project.key }}">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h2 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#prj-{{ project.key}}" href="#prj-{{ project.key}}-plans">
+                            <a data-toggle="collapse" data-parent="#prj-{{ project.key }}" href="#prj-{{ project.key }}-plans">
                                 {{ project.name}}</a>
                         </h2>
+                        <hr>
                     </div>
-                    <div id="prj-{{ project.key}}-plans" class="panel-collapse collapse">
+                    <div id="prj-{{ project.key }}-plans" class="panel-collapse collapse">
+                        <ul>
                         {% for plan in project.plans %}
-                        <div class="panel-heading" id="prj-{{ project.key}}-plan-{{ plan.short_key}}-h">
-                            <h3>{{ plan.short_name }}
+                            <li class="panel-group panel-heading" id="prj-{{ project.key}}-plan-{{ plan.short_key }}">
+                            <h3>
+                                <a data-toggle="collapse"
+                                   data-parent="#prj-{{ project.key}}-plan-{{ plan.short_key }}"
+                                   href="#prj-{{ project.key }}-plan-{{ plan.short_key }}-branches"
+                                >
+                                {{ plan.short_name }}
+                                </a>
                                 {% if plan.successful > 0 %}
                                     <span class="badge badge-success">{{ plan.successful }}</span>{% endif %}
                                 {% if plan.failed > 0 %}
                                     <span class="badge badge-error">{{ plan.failed }}</span>{% endif %}
                                 {% if plan.unknown > 0 %}
                                     <span class="badge badge-info">{{ plan.unknown }}</span>{% endif %}
+
                             </h3>
-                            <div class="panel-group" id="prj-{{ project.key }}-plan-{{ plan.short_key }}">
+                            </li>
+                            <div class="panel-group collapse" id="prj-{{ project.key }}-plan-{{ plan.short_key }}-branches">
+                                <ul>
                                 {% for branch in plan.branches %}
-                                    <h4>{{ branch.name }}
+                                    <li>
+                                    <h4>Branch: {{ branch.name }}
                                         {% if branch.successful > 0 %}
                                             <span class="badge badge-success">{{ branch.successful }}</span>{% endif %}
                                         {% if branch.failed > 0 %}
                                             <span class="badge badge-error">{{ branch.failed }}</span>{% endif %}
                                         {% if branch.unknown > 0 %}
                                             <span class="badge badge-info">{{ branch.unknown }}</span>{% endif %}
-                                    </h4>
+                                    </h4></li>
                                     <table class="table table-striped table-condensed">
                                             <thead>
                                                 <tr>
@@ -59,7 +71,7 @@
                                                         <td class="btn-info">
                                                     {% endif %}
                                                     <a href="{{ summary.bamboo_url }}/browse/{{ result.key }}" target="_blank">
-                                                        {{ result.state }}</a>
+                                                        {{ result.key }}</a>
                                                     </td>
                                                     <td>{{ result.started}}</td>
                                                     <td>{{ result.finished}}</td>
@@ -73,9 +85,12 @@
                                             </tbody>
                                     </table>
                                 {% endfor %}
+                                </ul>
                             </div>
-                        </div>
+
                         {% endfor %}
+                        </ul>
+
                     </div>
                 </div>
             </div>
