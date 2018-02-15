@@ -16,7 +16,8 @@ class TriggerReason(object):
     """
 
     manual = re.compile(
-        r'Manual run by (?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?')
+        r'Manual run (?:.+?(?=by))?by\s*(?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?'
+        r'(?P<user_name>[^<]*)(?:<\/a>)?$')
     child = re.compile(
         r'(?:Child\s+of\s+|Triggered\s+by\s+)<a href="http[s]?:\/\/[^"]*">(?P<parent_plan>.*)<\/a>')
     source = re.compile(
@@ -24,6 +25,9 @@ class TriggerReason(object):
     )
     rebuilt = re.compile(
         r'Rebuilt\s+by\s+(?:<a href="http[s]?:\/\/[^"]*\/(?P<user_id>.*)">)?(?P<user_name>[^<]*)(?:<\/a>)?'
+    )
+    custom_build = re.compile(
+        r'^Custom build by (?P<user_id>[^&]+).*$'
     )
 
     def __init__(self, msg):
@@ -59,6 +63,11 @@ class TriggerReason(object):
         if found:
             user_id = found.group('user_id') or found.group('user_name')
             return 'Rebuilt', user_id,  found.group('user_name'), ''
+
+        found = re.search(self.custom_build, self.msg)
+        if found:
+            user_id = found.group('user_id')
+            return 'Manual', user_id, user_id, ''
 
         else:
             log.error('No regex matching: {}'.format(self.msg))

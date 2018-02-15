@@ -19,9 +19,14 @@ class TestParseTriggerReason(object):
         ('First build for this plan', ('First build', '', '', '')),
         ('Triggered by <a href="https://foobar.com/bamboo/deploy/viewDeploymentResult.action?'
          'deploymentResultId=1122334455">Some Deployment Project &rsaquo; Test</a>',
-         ('Child', '', '', 'Some Deployment Project &rsaquo; Test'))
+         ('Child', '', '', 'Some Deployment Project &rsaquo; Test')),
+        ('Custom build by SOUSERID&nbsp;with revision '
+         '<a href="https://foobar.com/bamboo/browse/PPP-LLL-777#changesSummary">1234abc</a>',
+         ('Manual', 'SOUSERID', 'SOUSERID', '')),
+        ('Manual run from the stage: <b>Deploy</b> by <a href="https://swfactory.aegon.com/bamboo/browse/user/UUID">'
+         'User Name</a>', ('Manual', 'User Name', 'UUID', ''))
     ]
 
     def test_dummy(self):
         for reason, result in self.reasons:
-            assert TriggerReason(reason).tuple == result
+            assert result == TriggerReason(reason).tuple
