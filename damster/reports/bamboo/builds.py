@@ -1,4 +1,4 @@
-from damster.utils import initialize_logger
+from damster.utils import initialize_logger, quoted, time_to_excel
 from damster.reports.bamboo.utils import TriggerReason
 from damster.reports.base_report import BaseReport
 from atlassian import Bamboo
@@ -135,7 +135,69 @@ class BambooBuildsReport(BaseReport):
         with open(out_html, 'w') as outfile:
             outfile.write(html)
 
+    def save_to_csv(self):
+        out_csv = self.output_file(ext='csv')
+        log.info('Saving to CSV file {}'.format(out_csv))
+        lines = list()
+        header = ','.join([
+            'project_key',
+            'project_name',
+            'plan_key',
+            'plan_name',
+            'branch_name',
+            'branch_type',
+            'build_key',
+            'status',
+            'started',
+            'finished',
+            'duration',
+            'trigger',
+            'trigger_type',
+            'trigger_user',
+            'trigger_user_id',
+            'trigger_build',
+            'trigger_raw',
+            'stages',
+            'artifacts',
+            'jira_issues'
+        ])
+        lines.append(header)
+        for project in self.report:
+            for plan in project['plans']:
+                for branch in plan['branches']:
+                    for result in branch['results']:
+                        try:
+                            line = ','.join([
+                                project['key'],
+                                quoted(project['name']),
+                                plan['short_key'],
+                                quoted(plan['name']),
+                                quoted(branch['name']),
+                                branch['type'],
+                                result['key'],
+                                result['state'],
+                                time_to_excel(result['started']),
+                                time_to_excel(result['finished']),
+                                str(result['duration']),
+                                result['trigger_type'],
+                                result['trigger_type'],
+                                result['trigger_user'],
+                                result['trigger_user_id'],
+                                result['trigger_build'],
+                                result['trigger_raw'].replace('\n', ' - '),
+                                str(result['number_stages']),
+                                str(result['number_artifacts']),
+                                str(result['number_issues'])
+                            ])
+                            lines.append(line)
+                        except TypeError as e:
+                            log.error(e)
+                            log.error(result)
+        mkpath(self.output_folder)
+        with open(out_csv, 'w') as outfile:
+            outfile.write('\n'.join(lines))
+
     def run_report(self, use_cache=True):
         super(BambooBuildsReport, self).run_report(use_cache=use_cache)
-        #  self.save_to_csv()
+        self.save_to_csv()
         self.save_to_html(title='Bamboo Reports: Builds')

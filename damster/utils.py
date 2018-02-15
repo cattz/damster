@@ -55,7 +55,10 @@ def get_config():
     return config
 
 
+# TODO: Make this use global time zone
 def time_to_excel(tm):
+    if type(tm) != arrow.arrow.Arrow:
+        tm = arrow.get(tm).replace(tzinfo='Europe/Amsterdam')
     temp = arrow.get('1899-12-30')  # Note, not 31st Dec but 30th!
     try:
         delta = arrow.get(tm) - temp
