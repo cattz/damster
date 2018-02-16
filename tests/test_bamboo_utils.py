@@ -9,8 +9,8 @@ class TestParseTriggerReason(object):
         ('Manual run by someuser', ('Manual', 'someuser', 'someuser', '')),
         ('Code has changed', ('Commit', '', '', '')),
         ('Scheduled', ('Scheduled', '', '', '')),
-        ('Changes by <a href="http://url/viewUserSummary.action?currentUserName=usid">Last, Fisrt</a>',
-         ('Commit', 'Last, Fisrt', 'usid', '')),
+        ('Changes by <a href="http://url/viewUserSummary.action?currentUserName=usid">Last, First</a>',
+         ('Commit', 'Last, First', 'usid', '')),
         ('Rebuilt by <a href="https://foo.bar.com/bamboo/browse/user/jsnow">John Snow</a>',
          ('Rebuilt', 'John Snow', 'jsnow', '')),
         ('Rebuilt      by <a href="https://foo.bar.com/bamboo/browse/user/mward">M Ward</a>',
@@ -24,7 +24,8 @@ class TestParseTriggerReason(object):
          '<a href="https://foobar.com/bamboo/browse/PPP-LLL-777#changesSummary">1234abc</a>',
          ('Manual', 'SOUSERID', 'SOUSERID', '')),
         ('Manual run from the stage: <b>Deploy</b> by <a href="https://swfactory.aegon.com/bamboo/browse/user/UUID">'
-         'User Name</a>', ('Manual', 'User Name', 'UUID', ''))
+         'User Name</a>', ('Manual', 'User Name', 'UUID', '')),
+        ('Manual run from the stage: <b>Artifactory</b> by L4IJUM', ('Manual', 'L4IJUM', 'L4IJUM', ''))
     ]
 
     def test_dummy(self):
