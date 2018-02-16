@@ -22,8 +22,9 @@ class BambooDeploymentsReport(BaseReport):
         ))
         report = list()
         deploy_projects = self.bamboo.deployment_project()
-
+        log.debug('Found {} deployment projects'.format(len(deploy_projects)))
         for project in deploy_projects:
+            log.debug('Searching deployments for project "{}"'.format(project['name']))
             plan_key = project['planKey']['key'] if 'planKey' in project else ''
             project_dict = dict(
                 prj_id=project['id'],
@@ -38,16 +39,14 @@ class BambooDeploymentsReport(BaseReport):
                     env_name=env['name'],
                     env_results=list()
                 )
-                log.debug('\t{}'.format(env_dict))
-                deploy_results = self.bamboo.deployment_environment_results(env['id'], 'results')
-                if 'results' in deploy_results:
-                    for result in deploy_results['results']:
-                        started_time = self._long_time_to_epoch(result['startedDate'])
-                        if started_time > self.from_date:
-                            if started_time < self.to_date:
-                                env_dict['env_results'].append(self.get_deploy_result_details(result))
-                        else:
-                            break  # Since results are ordered from newest, exit as soon as we find an older result
+                log.debug('Getting deployments to environment "{}"'.format(env['name']))
+                for result in self.bamboo.deployment_environment_results(env['id'], expand='results', max_results=25):
+                    started_time = self._long_time_to_epoch(result['startedDate'])
+                    if started_time > self.from_date:
+                        if started_time < self.to_date:
+                            env_dict['env_results'].append(self.get_deploy_result_details(result))
+                    else:
+                        break  # Since results are ordered from newest, exit as soon as we find an older result
                 env_summary = dict(
                     successful=len([r for r in env_dict['env_results'] if r['state'] == 'SUCCESS']),
                     failed=len([r for r in env_dict['env_results'] if r['state'] == 'FAILED']),
@@ -86,7 +85,7 @@ class BambooDeploymentsReport(BaseReport):
             deployment_trigger_build=build_id,
             details=self.get_build_details_from_result(result)
         )
-        log.debug('\t\t{}'.format(result_dict))
+        log.debug('Processing result {}'.format(result_dict))
         return result_dict
 
     def get_build_details_from_result(self, result):
@@ -209,7 +208,9 @@ class BambooDeploymentsReport(BaseReport):
             outfile.write(html)
 
     def run_report(self, use_cache=True):
-        super(BambooDeploymentsReport, self).run_report(use_cache=use_cache)
+        self._report = self.generate_report()
+
+        self.save_to_json()
 
         self.save_to_csv()
 
