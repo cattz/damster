@@ -48,7 +48,7 @@ class BaseReport(object):
             json.dump(self.report, outfile)
 
     def generate_report(self):
-        return self._report  # This will be overriden
+        return self._report  # This will be overridden
 
     def run_report(self, use_cache=True):
         if not (os.path.isfile(self.output_file()) and use_cache):

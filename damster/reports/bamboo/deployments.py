@@ -4,7 +4,8 @@ from damster.reports.base_report import BaseReport
 from atlassian import Bamboo
 import jinja2
 from distutils.dir_util import mkpath
-
+import os
+import json
 
 log = initialize_logger(__name__)
 
@@ -21,9 +22,7 @@ class BambooDeploymentsReport(BaseReport):
             self._time_to_string(self.from_date), self._time_to_string(self.to_date)
         ))
         report = list()
-        deploy_projects = self.bamboo.deployment_project()
-        log.debug('Found {} deployment projects'.format(len(deploy_projects)))
-        for project in deploy_projects:
+        for project in self.bamboo.deployment_projects():
             log.debug('Searching deployments for project "{}"'.format(project['name']))
             plan_key = project['planKey']['key'] if 'planKey' in project else ''
             project_dict = dict(
@@ -96,17 +95,17 @@ class BambooDeploymentsReport(BaseReport):
         try:
             for artifact in result['deploymentVersion']['items']:
                 log.debug('Getting info for plan: {}'.format(artifact))
-                plan_key = artifact['planResultKey']['key']
-                if not plan_key.startswith('DELETED_'):
-                    build = self.bamboo.results(plan_key, expand=None)
+                build_key = artifact['planResultKey']['key']
+                if not build_key.startswith('DELETED_'):
+                    build = self.bamboo.build_result(build_key)
                     trigger, user_name, user_id, trigger_plan_key = TriggerReason(build['buildReason']).tuple
                     build_reason = build['buildReason']
                 else:
-                    trigger, user_name, user_id, trigger_plan_key = '', '', '', plan_key
+                    trigger, user_name, user_id, trigger_plan_key = '', '', '', build_key
                     build_reason = 'N/A'
                 details.append(
                     dict(
-                        plan_key=plan_key,
+                        plan_key=build_key,
                         trigger=trigger,
                         user_id=user_id,
                         user_name=user_name,
@@ -208,9 +207,11 @@ class BambooDeploymentsReport(BaseReport):
             outfile.write(html)
 
     def run_report(self, use_cache=True):
-        self._report = self.generate_report()
-
-        self.save_to_json()
+        if not (os.path.isfile(self.output_file()) and use_cache):
+            self._report = self.generate_report()
+            self.save_to_json()
+        else:
+            self._report = json.load(open(self.output_file()))
 
         self.save_to_csv()
 

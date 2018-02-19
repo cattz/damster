@@ -29,16 +29,14 @@ class BambooBuildsReport(BaseReport):
                 self._time_to_string(self.from_date), self._time_to_string(self.to_date)
             ))
             report = list()
-            build_projects = self.bamboo.projects()
-            for project in build_projects['projects']['project']:
+            for project in self.bamboo.projects():
                 project_dict = dict(
                     key=project['key'],
                     name=project['name'],
                     #  description=project['description'],
                     plans=list()
                 )
-                build_plans = self.bamboo.projects(project_key=project['key'], expand='plans')
-                for plan in build_plans['plans']['plan']:
+                for plan in self.bamboo.project_plans(project_key=project['key']):
                     plan_dict = dict(
                         short_name=plan['shortName'],
                         short_key=plan['shortKey'],
@@ -49,8 +47,7 @@ class BambooBuildsReport(BaseReport):
                         branches=list()
                     )
                     log.debug(plan_dict)
-                    branches = self.bamboo.search_branches(plan['key'])
-                    for branch in branches['searchResults']:
+                    for branch in self.bamboo.search_branches(plan['key']):
                         branch_dict = dict(
                             key=branch['id'],
                             type=branch['type'],
@@ -58,7 +55,7 @@ class BambooBuildsReport(BaseReport):
                             results=list()
                         )
                         build_results = self.bamboo.results(project_key=branch['id'], expand='results')
-                        for result in build_results['results']['result']:
+                        for result in build_results:
                             log.debug(result)
                             result_dict = dict(
                                 number=result['number'],
@@ -66,7 +63,7 @@ class BambooBuildsReport(BaseReport):
                                 key=result['key'],
                                 lifecycle_state=result['lifeCycleState'],
                             )
-                            result_details = self.bamboo.results(project_key=result['buildResultKey'])
+                            result_details = self.bamboo.build_result(build_key=result['buildResultKey'])
                             # WTF Atlassian! buildStartedTime is not sorted for first builds of a plan
                             started_time_string = result_details.get('buildStartedTime',
                                                                      result_details.get('buildCompletedTime'))
