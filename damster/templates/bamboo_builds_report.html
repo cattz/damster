@@ -2,7 +2,11 @@
 
 {% block content %}
 
-        <h1>Bamboo Builds between {{ summary.from_date }} and {{ summary.to_date}}</h1>
+        <h1>{{ summary.successful + summary.failed + summary.unknown }} Bamboo Builds between {{ summary.from_date }} and {{ summary.to_date}}
+            <span class="badge badge-success">{{ summary.successful }}</span>
+            <span class="badge badge-error">{{ summary.failed }}</span>
+            <span class="badge badge-info">{{ summary.unknown }}</span>
+        </h1>
         <hr>
         <div class="container-fluid">
             {% for project in report %}
@@ -26,6 +30,7 @@
                                 >
                                 {{ plan.short_name }}
                                 </a>
+                                ({{ plan.branches|length }} branch{%- if plan.branches|length >1 %}es{%-endif%})
                                 {% if plan.successful > 0 %}
                                     <span class="badge badge-success">{{ plan.successful }}</span>{% endif %}
                                 {% if plan.failed > 0 %}
@@ -34,6 +39,7 @@
                                     <span class="badge badge-info">{{ plan.unknown }}</span>{% endif %}
 
                             </h3>
+                                <p>{{ plan.description }}</p>
                             </li>
                             <div class="panel-group collapse" id="prj-{{ project.key }}-plan-{{ plan.short_key }}-branches">
                                 <ul>

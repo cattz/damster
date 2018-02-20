@@ -31,10 +31,11 @@ class BambooBuildsReport(BaseReport):
             report = list()
             for project in self.bamboo.projects():
                 log.info('Retrieving plans for project "{}:{}"'.format(project['key'], project['name']))
+                project_description = project['description'] if 'description' in project else ''
                 project_dict = dict(
                     key=project['key'],
                     name=project['name'],
-                    #  description=project['description'],
+                    description=project_description,
                     plans=list()
                 )
                 for plan in self.bamboo.project_plans(project_key=project['key']):
@@ -104,6 +105,9 @@ class BambooBuildsReport(BaseReport):
                         plan_dict['unknown'] = sum([b['unknown'] for b in plan_dict['branches']])
                         project_dict['plans'].append(plan_dict)
                 if project_dict['plans']:
+                    project_dict['successful'] = sum([b['successful'] for b in project_dict['plans']])
+                    project_dict['failed'] = sum([b['failed'] for b in project_dict['plans']])
+                    project_dict['unknown'] = sum([b['unknown'] for b in project_dict['plans']])
                     report.append(project_dict)
             self._report = report
         return self._report
@@ -117,9 +121,9 @@ class BambooBuildsReport(BaseReport):
 
         summary = dict(
             projects=len(self.report),
-            #  successful=sum([pl['successful'] for pl in [pr['plans'] for pr in self.report]]),
-            #  failed=sum([pl['failed'] for pl in [pr['plans'] for pr in self.report]]),
-            #  unknown=sum([pl['unknown'] for pl in [pr['plans'] for pr in self.report]]),
+            successful=sum([pr['successful'] for pr in self.report]),
+            failed=sum([pr['failed'] for pr in self.report]),
+            unknown=sum([pr['unknown'] for pr in self.report]),
             from_date=self._time_to_string(self.from_date, fmt='YYYY/MM/DD'),
             to_date=self._time_to_string(self.to_date, fmt='YYYY/MM/DD'),
             bamboo_url=self.bamboo.url
