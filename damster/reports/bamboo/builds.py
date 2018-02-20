@@ -30,6 +30,7 @@ class BambooBuildsReport(BaseReport):
             ))
             report = list()
             for project in self.bamboo.projects():
+                log.info('Retrieving plans for project "{}:{}"'.format(project['key'], project['name']))
                 project_dict = dict(
                     key=project['key'],
                     name=project['name'],
@@ -37,6 +38,7 @@ class BambooBuildsReport(BaseReport):
                     plans=list()
                 )
                 for plan in self.bamboo.project_plans(project_key=project['key']):
+                    log.info('Retrieving branches for plan "{}:{}"'.format(plan['key'], plan['shortName']))
                     plan_dict = dict(
                         short_name=plan['shortName'],
                         short_key=plan['shortKey'],
@@ -48,15 +50,15 @@ class BambooBuildsReport(BaseReport):
                     )
                     log.debug(plan_dict)
                     for branch in self.bamboo.search_branches(plan['key']):
+                        log.info('Retrieving results for branch "{}"'.format(branch['searchEntity']['branchName']))
                         branch_dict = dict(
                             key=branch['id'],
                             type=branch['type'],
                             name=branch['searchEntity']['branchName'],
                             results=list()
                         )
-                        build_results = self.bamboo.results(project_key=branch['id'], expand='results')
-                        for result in build_results:
-                            log.debug(result)
+                        for result in self.bamboo.results(project_key=branch['id'], expand='results'):
+                            log.debug('Build result: {}'.format(result))
                             result_dict = dict(
                                 number=result['number'],
                                 state=result['state'],
@@ -64,13 +66,13 @@ class BambooBuildsReport(BaseReport):
                                 lifecycle_state=result['lifeCycleState'],
                             )
                             result_details = self.bamboo.build_result(build_key=result['buildResultKey'])
-                            # WTF Atlassian! buildStartedTime is not sorted for first builds of a plan
+                            # WTF Atlassian! buildStartedTime is not always stored
                             started_time_string = result_details.get('buildStartedTime',
                                                                      result_details.get('buildCompletedTime'))
                             started_time = arrow.get(started_time_string).replace(tzinfo=self.time_zone)
                             if started_time > self.from_date:
                                 if started_time < self.to_date:
-                                    log.debug(result_details)
+                                    log.debug('Result details: {}'.format(result_details))
                                     result_dict['started'] = prettify_date_time(started_time_string)
                                     result_dict['finished'] = prettify_date_time(
                                         result_details.get('buildCompletedTime', ''))
