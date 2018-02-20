@@ -10,15 +10,25 @@ cfg = get_config()
 YEAR = '2017'
 
 
-def main():
+def monthly():
 
     for month in range(1, 11):
         report = BambooDeploymentsReport(
             cfg,
             from_date='{}-{:02}-01'.format(YEAR, month),
-            to_date='{}-{:02}-01'.format(YEAR, month + 1)
+            to_date='{}-{:02}-01'.format(YEAR, month+1)
         )
         report.run_report(use_cache=True)
+
+
+def main():
+
+    report = BambooDeploymentsReport(
+        cfg,
+        from_date='2018-01-01',
+        to_date='2018-02-01'
+    )
+    report.run_report(use_cache=False)
 
 
 if __name__ == "__main__":
