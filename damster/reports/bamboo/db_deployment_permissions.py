@@ -146,5 +146,5 @@ class BambooDBDeploymentPermissions(GenericDB):
                             **env_permission))
 
         mkpath(self.output_folder)
-        with open(out_csv, 'w') as outfile:
+        with open(out_csv, 'w', encoding='utf8') as outfile:
             outfile.write('\n'.join(lines))

@@ -135,7 +135,7 @@ class BambooBuildsReport(BaseReport):
             **args
         )
         mkpath(self.output_folder)
-        with open(out_html, 'w') as outfile:
+        with open(out_html, 'w', encoding='utf8') as outfile:
             outfile.write(html)
 
     def save_to_csv(self):
@@ -197,7 +197,7 @@ class BambooBuildsReport(BaseReport):
                             log.error(e)
                             log.error(result)
         mkpath(self.output_folder)
-        with open(out_csv, 'w') as outfile:
+        with open(out_csv, 'w', encoding='utf8') as outfile:
             outfile.write('\n'.join(lines))
 
     def run_report(self, use_cache=True):

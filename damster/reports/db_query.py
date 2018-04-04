@@ -93,14 +93,14 @@ class GenericDB(object):
         csv_file = output_file or self.output_file('csv')
         log.info('Saving query results to CSV file: {}'.format(csv_file))
         mkpath(os.path.dirname(csv_file))
-        with open(csv_file, 'w') as f:
+        with open(csv_file, 'w', encoding='utf8') as f:
             self.cur.copy_expert(csv_query, f)
 
     def save_to_json(self):
         out_json = self.output_file()
         log.info('Saving to JSON: {}'.format(out_json))
         mkpath(self.output_folder)
-        with open(out_json, 'w') as outfile:
+        with open(out_json, 'w', encodiing='utf8') as outfile:
             json.dump(self.report, outfile)
 
     def save_to_html(self, template_name=None, **args):
@@ -114,7 +114,7 @@ class GenericDB(object):
 
         html = template.render(report=self.report, **args)
         mkpath(self.output_folder)
-        with open(out_html, 'w') as outfile:
+        with open(out_html, 'w', encoding='utf8') as outfile:
             outfile.write(html)
 
     def __del__(self):

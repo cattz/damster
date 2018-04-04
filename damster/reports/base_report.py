@@ -44,7 +44,7 @@ class BaseReport(object):
         out_json = self.output_file()
         log.info('Saving to JSON: {}'.format(out_json))
         mkpath(self.output_folder)
-        with open(out_json, 'w') as outfile:
+        with open(out_json, 'w', encoding='utf8') as outfile:
             json.dump(self.report, outfile)
 
     def generate_report(self):

@@ -172,7 +172,7 @@ class BambooDeploymentsReport(BaseReport):
                         log.error(result)
 
         mkpath(self.output_folder)
-        with open(out_csv, 'w') as outfile:
+        with open(out_csv, 'w', encoding='utf8') as outfile:
             outfile.write('\n'.join(lines))
 
     def filter_projects_with_no_deployments(self):
@@ -203,7 +203,7 @@ class BambooDeploymentsReport(BaseReport):
             **args
         )
         mkpath(self.output_folder)
-        with open(out_html, 'w') as outfile:
+        with open(out_html, 'w', encoding='utf8') as outfile:
             outfile.write(html)
 
     def run_report(self, use_cache=True):
