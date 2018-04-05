@@ -93,7 +93,7 @@ class GenericDB(object):
         csv_file = output_file or self.output_file('csv')
         log.info('Saving query results to CSV file: {}'.format(csv_file))
         mkpath(os.path.dirname(csv_file))
-        with open(csv_file, 'w', encoding='utf8') as f:
+        with open(csv_file, 'w', encoding='ascii') as f:
             self.cur.copy_expert(csv_query, f)
 
     def save_to_json(self):

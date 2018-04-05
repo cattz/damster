@@ -5,8 +5,11 @@ import pkg_resources
 import arrow
 from arrow.parser import ParserError
 from configparser import ConfigParser, ExtendedInterpolation
+import re
 
+NON_ASCII = re.compile(r'[^\x00-\x7f]'
 
+                       )
 class LogFilter(logging.Filter):
     """
     Used by :func:`initialize_logger` to redirect errors to ``stderr``
@@ -83,3 +86,7 @@ def time_delta(t1, t2, excel=True):
 
 def quoted(it):
     return '"{}"'.format(it)
+
+
+def replace_non_ascii(s, replacement=''):
+    return re.sub(NON_ASCII, replacement, s)

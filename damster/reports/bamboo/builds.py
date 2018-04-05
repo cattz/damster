@@ -1,10 +1,11 @@
-from damster.utils import initialize_logger, quoted, time_to_excel
+from damster.utils import initialize_logger, quoted, time_to_excel, replace_non_ascii
 from damster.reports.bamboo.utils import TriggerReason
 from damster.reports.base_report import BaseReport
 from atlassian import Bamboo
 import arrow
 import jinja2
 from distutils.dir_util import mkpath
+from urllib.parse import unquote
 
 log = initialize_logger(__name__)
 
@@ -80,7 +81,7 @@ class BambooBuildsReport(BaseReport):
                                     result_dict['duration'] = result_details.get('buildDuration', 0)
                                     trigger, user_name, user_id, build_id = TriggerReason(
                                         result_details['reasonSummary']).tuple
-                                    result_dict['trigger_raw'] = result_details['reasonSummary']
+                                    result_dict['trigger_raw'] = unquote(result_details['reasonSummary'])
                                     result_dict['trigger_type'] = trigger
                                     result_dict['trigger_user'] = user_name
                                     result_dict['trigger_user_id'] = user_id
@@ -197,8 +198,8 @@ class BambooBuildsReport(BaseReport):
                             log.error(e)
                             log.error(result)
         mkpath(self.output_folder)
-        with open(out_csv, 'w', encoding='utf8') as outfile:
-            outfile.write('\n'.join(lines))
+        with open(out_csv, 'w', encoding='ascii') as outfile:
+            outfile.write(replace_non_ascii('\n'.join(lines), '_'))
 
     def run_report(self, use_cache=True):
         super(BambooBuildsReport, self).run_report(use_cache=use_cache)

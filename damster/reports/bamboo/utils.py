@@ -1,4 +1,5 @@
 from damster.utils import initialize_logger
+from urllib.parse import unquote
 import re
 
 log = initialize_logger(__name__)
@@ -32,7 +33,7 @@ class TriggerReason(object):
 
     def __init__(self, msg):
 
-        self.msg = msg
+        self.msg = unquote(msg)
         self.trigger_type, self.user_id, self.user_name, self.build_key = self.parse()
 
     def parse(self):

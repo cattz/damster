@@ -1,4 +1,4 @@
-from damster.utils import initialize_logger, time_to_excel, time_delta, quoted
+from damster.utils import initialize_logger, time_to_excel, time_delta, quoted, replace_non_ascii
 from damster.reports.bamboo.utils import TriggerReason
 from damster.reports.base_report import BaseReport
 from atlassian import Bamboo
@@ -172,8 +172,8 @@ class BambooDeploymentsReport(BaseReport):
                         log.error(result)
 
         mkpath(self.output_folder)
-        with open(out_csv, 'w', encoding='utf8') as outfile:
-            outfile.write('\n'.join(lines))
+        with open(out_csv, 'w', encoding='ascii') as outfile:
+            outfile.write(replace_non_ascii('\n'.join(lines), '_'))
 
     def filter_projects_with_no_deployments(self):
         return [prj for prj in self.report if sum(
