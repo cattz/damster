@@ -23,6 +23,7 @@ setup(
 
     zip_safe=False,
     install_requires=[
+        'click',
         'atlassian-python-api',
         'arrow',
         'influxdb',
@@ -44,13 +45,14 @@ setup(
         ],
         'metrics': [
             'influxdb',
-            'shecdule'
+            'schedule'
         ]
     },
     platforms='Platform Independent',
 
     entry_points={
         "console_scripts": [
+            "damster    = damster.cli:cli",
             "damster-metrics    = damster.metric:main",
             "damster-reports    = damster.report:main"
         ]

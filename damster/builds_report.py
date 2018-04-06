@@ -26,7 +26,7 @@ def main():
     report = BambooBuildsReport(
         cfg,
         from_date='2018-02-01',
-        to_date='2018-03-01'
+        # to_date='2018-03-01'
     )
     report.run_report(use_cache=False)
 
