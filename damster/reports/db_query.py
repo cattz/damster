@@ -100,7 +100,7 @@ class GenericDB(object):
         out_json = self.output_file()
         log.info('Saving to JSON: {}'.format(out_json))
         mkpath(self.output_folder)
-        with open(out_json, 'w', encodiing='utf8') as outfile:
+        with open(out_json, 'w', encoding='utf8') as outfile:
             json.dump(self.report, outfile)
 
     def save_to_html(self, template_name=None, **args):
