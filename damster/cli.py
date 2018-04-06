@@ -4,59 +4,64 @@ import click
 
 log = initialize_logger(__name__)
 
-cfg = get_config()
-
 
 @click.group()
 @click.version_option()
-def cli():
-    """Damster-Reports.
+# @click.option('--debug/--no-debug', default=False)
+@click.pass_context
+def cli(ctx):
+    """Damster: Reports from Atlassian tools.
     """
+    ctx.obj = get_config()
 
 
 @cli.group()
 def bamboo():
     """Bamboo reports."""
+    pass
 
 
-@bamboo.command('deployments')
+@bamboo.command('deployments', short_help='generate deployments report')
 @click.argument('from-date')
 @click.argument('to-date', required=False)
 @click.option('--use-cache/--no-use-cache', default=False)
-def bamboo_deployments(from_date, to_date, use_cache):
+@click.pass_context
+def bamboo_deployments(ctx, from_date, to_date, use_cache):
     """Generate a deployments report"""
 
     click.echo('Getting Bamboo deployments between {} and {}'.format(from_date, to_date))
     report = BambooDeploymentsReport(
-        cfg,
+        ctx.obj,
         from_date=from_date,
         to_date=to_date
     )
     report.run_report(use_cache=use_cache)
 
 
-@bamboo.command('builds')
+@bamboo.command('builds', short_help='generate build report')
 @click.argument('from-date')
 @click.argument('to-date', required=False)
 @click.option('--use-cache/--no-use-cache', default=False)
-def bamboo_builds(from_date, to_date, use_cache):
+@click.pass_context
+def bamboo_builds(ctx, from_date, to_date, use_cache):
     """Generate a builds report"""
 
     click.echo('Getting Bamboo builds between {} and {}'.format(from_date, to_date))
     report = BambooBuildsReport(
-        cfg,
+        ctx.obj,
         from_date=from_date,
         to_date=to_date
     )
     report.run_report(use_cache=use_cache)
 
 
-@bamboo.command('deployment-permissions')
+@bamboo.command('deployment-permissions', short_help='generate deployment permissions report')
 @click.option('--use-ssh-tunnel/--no-use-ssh-tunnel', default=False)
-def bamboo_deployment_permissions(use_ssh_tunnel):
+@click.pass_context
+def bamboo_deployment_permissions(ctx, use_ssh_tunnel):
     """Deployment projects and environments permissions"""
 
-    bamboo_report = BambooDBDeploymentPermissions(cfg, use_ssh_tunnel=use_ssh_tunnel)
+    bamboo_report = BambooDBDeploymentPermissions(ctx.obj, use_ssh_tunnel=use_ssh_tunnel)
     bamboo_report.save_to_csv()
     bamboo_report.save_to_json()
     bamboo_report.save_to_html(title='Bamboo Reports: Deployment Permissions')
