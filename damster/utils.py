@@ -7,9 +7,9 @@ from arrow.parser import ParserError
 from configparser import ConfigParser, ExtendedInterpolation
 import re
 
-NON_ASCII = re.compile(r'[^\x00-\x7f]'
+NON_ASCII = re.compile(r'[^\x00-\x7f]')
 
-                       )
+
 class LogFilter(logging.Filter):
     """
     Used by :func:`initialize_logger` to redirect errors to ``stderr``
