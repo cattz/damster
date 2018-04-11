@@ -1,5 +1,6 @@
 from damster.utils import initialize_logger, get_config
 from damster.reports.bamboo import BambooDeploymentsReport, BambooBuildsReport, BambooDBDeploymentPermissions
+from damster.reports.confluence import ConfluenceChanges
 import click
 
 log = initialize_logger(__name__)
@@ -65,3 +66,23 @@ def bamboo_deployment_permissions(ctx, use_ssh_tunnel):
     bamboo_report.save_to_csv()
     bamboo_report.save_to_json()
     bamboo_report.save_to_html(title='Bamboo Reports: Deployment Permissions')
+
+
+@cli.group()
+def confluence():
+    """Confluence reports."""
+    pass
+
+
+@confluence.command('changes', short_help='generate changes report')
+@click.argument('from-date', required=False)
+@click.argument('to-date', required=False)
+@click.option('--use-ssh-tunnel/--no-use-ssh-tunnel', default=False)
+@click.pass_context
+def confluence_changes(ctx, from_date, to_date, use_ssh_tunnel):
+    """Confluence content changes"""
+
+    confluence_report = ConfluenceChanges(ctx.obj, from_date, to_date, use_ssh_tunnel=use_ssh_tunnel)
+    confluence_report.save_to_csv()
+    confluence_report.save_to_json()
+    # bamboo_report.save_to_html(title='Confluence Reports: Changes')
