@@ -44,12 +44,13 @@ class ConfluenceChanges(GenericDB):
         'um_username',
         'um_lower_username',
         'sp_spacekey',
-        'sp_spancename'
+        'sp_spacename'
         ]
     additional_fields = [
         'version_diff',
         'excel_created',
-        'excel_modified'
+        'excel_modified',
+        'user_name'
     ]
 
     def __init__(self, cfg, from_date, to_date,
@@ -101,6 +102,7 @@ class ConfluenceChanges(GenericDB):
             report_row['version_diff'] = self.__version_change_diff(report_row)
             report_row['excel_created'] = time_to_excel(report_row['c_creationdate'])
             report_row['excel_modified'] = time_to_excel(report_row['c_lastmoddate'])
+            report_row['user_name'] = self.crowd.user(report_row['um_username'])
             report.append(report_row)
         return report
 
