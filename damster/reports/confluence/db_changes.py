@@ -18,7 +18,6 @@ class ConfluenceChanges(GenericDB):
            c.content_status,
            c.spaceid,
            um.username,
-           um.lower_username,
            sp.spacekey,
            sp.spacename
     FROM   PUBLIC.content c
@@ -85,7 +84,7 @@ class ConfluenceChanges(GenericDB):
         )
 
     def generate_report(self):
-        time_constraint = "AND c.lastmoddate > CURRENT_DATE - interval '1 days';"
+        time_constraint = "AND c.lastmoddate > CURRENT_DATE - interval '1 months';"
         if self.from_date:
             time_constraint = " AND c.lastmoddate > {}".format(self.from_date)
         if self.to_date:
