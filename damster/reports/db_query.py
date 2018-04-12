@@ -127,7 +127,8 @@ class GenericDB(object):
             outfile.write(html)
 
     def __del__(self):
-        self.cur.close()
-        self.db.close()
+        if 'cur' in self.__dict__:
+            self.cur.close()
+            self.db.close()
         if self.ssh_tunnel:
             self.ssh_tunnel.stop()
