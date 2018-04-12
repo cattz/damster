@@ -6,6 +6,7 @@ import jinja2
 import os
 import json
 from distutils.dir_util import mkpath
+import sys
 
 log = initialize_logger(__name__)
 
@@ -61,7 +62,11 @@ class GenericDB(object):
         cons = "dbname='{dbname}' user='{dbuser}' host='{host}' " \
                "password='{password}' port='{port}'".format(**locals())
         log.info('Connecting to db {dbname} at {host}:{port}'.format(**locals()))
-        return psycopg2.connect(cons)
+        try:
+            return psycopg2.connect(cons)
+        except psycopg2.OperationalError as e:
+            log.error('Error connecting to database: {}'.format(e))
+            sys.exit(-1)
 
     @property
     def output_folder(self):
