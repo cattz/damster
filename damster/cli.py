@@ -9,7 +9,7 @@ log = initialize_logger(__name__)
 @click.group()
 @click.version_option()
 # @click.option('--debug/--no-debug', default=False)
-@click.option('--config', required=False, short_help='configuration file to use')
+@click.option('--config', required=False, help='configuration file to use')
 @click.pass_context
 def cli(ctx, config):
     """Damster: Reports from Atlassian tools.
