@@ -42,7 +42,6 @@ class ConfluenceChanges(GenericDB):
         'c_content_status',
         'c_spaceid',
         'um_username',
-        'um_lower_username',
         'sp_spacekey',
         'sp_spacename'
         ]
@@ -102,7 +101,7 @@ class ConfluenceChanges(GenericDB):
             report_row['version_diff'] = self.__version_change_diff(report_row)
             report_row['excel_created'] = time_to_excel(report_row['c_creationdate'])
             report_row['excel_modified'] = time_to_excel(report_row['c_lastmoddate'])
-            report_row['user_name'] = self.crowd.user(report_row['um_username'])
+            report_row['user_name'] = self._get_display_name(report_row['um_username'])
             report.append(report_row)
         return report
 

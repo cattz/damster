@@ -41,8 +41,12 @@ class GenericDB(object):
             remote_bind_address=remote_bind_address,
             local_bind_address=local_bind_address
         )
-        tunnel.start()
-        return tunnel
+        try:
+            tunnel.start()
+            return tunnel
+        except Exception as e:
+            log.error(e)
+            raise(e)
 
     def connect(self):
         if self.ssh_tunnel:

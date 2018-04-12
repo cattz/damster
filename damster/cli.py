@@ -85,4 +85,4 @@ def confluence_changes(ctx, from_date, to_date, use_ssh_tunnel):
     confluence_report = ConfluenceChanges(ctx.obj, from_date, to_date, use_ssh_tunnel=use_ssh_tunnel)
     confluence_report.save_to_csv()
     confluence_report.save_to_json()
-    # bamboo_report.save_to_html(title='Confluence Reports: Changes')
+    # confluence_report.save_to_html(title='Confluence Reports: Changes')
