@@ -46,8 +46,8 @@ class GenericDB(object):
             tunnel.start()
             return tunnel
         except Exception as e:
-            log.error(e)
-            raise(e)
+            log.error('Error starting SSH tunnel: {}'.format(e))
+            raise e
 
     def connect(self):
         if self.ssh_tunnel:
