@@ -50,11 +50,22 @@ def initialize_logger(module_name):
     return logger
 
 
-def get_config():
+log = initialize_logger(__name__)
+
+
+def get_config(config_file):
     config = ConfigParser(interpolation=ExtendedInterpolation())
     defaults = pkg_resources.resource_filename('damster', 'defaults.cfg')
-    config.read_file(open(defaults))
-    config.read(['damster.cfg', os.path.expanduser('~/.config/damster.cfg')])
+    cwd = os.getcwd()
+    config_files_list = [defaults, os.path.expanduser('~/.config/damster.cfg'), os.path.join(cwd, 'damster.cfg')]
+    if config_file:
+        config_file_abs = os.path.join(cwd, config_file)
+        if os.path.isfile(config_file_abs):
+            config_files_list.append(config_file_abs)
+        else:
+            log.error('Can not read config file "{}"'.format(config_file_abs))
+            sys.exit(-1)
+    config.read(config_files_list)
     return config
 
 
