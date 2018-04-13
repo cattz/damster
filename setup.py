@@ -1,7 +1,5 @@
 import os
-import sys
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import find_packages, setup
 
 version_file = os.path.join('damster', 'VERSION')
 
@@ -23,6 +21,7 @@ setup(
 
     zip_safe=False,
     install_requires=[
+        'configparser',
         'click',
         'atlassian-python-api',
         'arrow',

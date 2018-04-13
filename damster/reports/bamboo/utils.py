@@ -1,5 +1,8 @@
 from damster.utils import initialize_logger
-from urllib.parse import unquote
+try:
+    from urllib import unquote  # Python 2.X
+except ImportError:
+    from urllib.parse import unquote  # Python 3+
 import re
 
 log = initialize_logger(__name__)
