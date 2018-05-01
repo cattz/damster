@@ -22,8 +22,11 @@ class GenericDB(object):
     def __init__(self, cfg, db_settings_section='Common', name='generic_db_query', use_ssh_tunnel=False):
         self.name = name
         self.cfg = cfg
+        self.ssh_tunnel = None
         self.db_settings = self.cfg[db_settings_section]
-        self.ssh_tunnel = self.start_ssh_tunnel() if use_ssh_tunnel else None
+
+        if use_ssh_tunnel:
+            self.ssh_tunnel = self.start_ssh_tunnel()
         self.db = self.connect()
         self.cur = self.db.cursor()
         self._report = None
@@ -46,8 +49,9 @@ class GenericDB(object):
             tunnel.start()
             return tunnel
         except Exception as e:
-            log.error('Error starting SSH tunnel: {}'.format(e))
-            raise e
+            log.error('Error starting SSH tunnel to {}: {}'.format(host, e))
+            log.error('SSH settings: {}'.format(dict(ssh_settings)))
+            sys.exit(-1)
 
     def connect(self):
         if self.ssh_tunnel:
