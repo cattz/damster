@@ -65,7 +65,16 @@ class GenericDB(object):
     def _connect(self, dbname, dbuser, host, password, port, ssh_gateway=None):
         cons = "dbname='{dbname}' user='{dbuser}' host='{host}' " \
                "password='{password}' port='{port}'".format(**locals())
-        log.info('Connecting to db {dbname} at {host}:{port}'.format(**locals()))
+        if ssh_gateway:
+            log.info('Connecting to db {dbname} at {host}:{port} through gateway {gateway}'.format(
+                host= self.db_settings.get('host'),
+                port= self.db_settings.get('port'),
+                dbname=dbname,
+                gateway=ssh_gateway
+                )
+            )
+        else:
+            log.info('Connecting to db {dbname} at {host}:{port}'.format(**locals()))
         try:
             return psycopg2.connect(cons)
         except psycopg2.OperationalError as e:
