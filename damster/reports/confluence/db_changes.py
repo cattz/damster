@@ -69,13 +69,13 @@ class ConfluenceChanges(GenericDB):
             return user_id
 
     def __version_change_diff(self, content):
-        if content['c_version'] == '1':
-            return ''
-        url = "{base_url}/pages/diffpagesbyversion.action?" \
-              "pageId={page_id}&" \
-              "selectedPageVersions={version_number_1}&selectedPageVersions={version_number_2}"
-
         base_url = self.cfg['Confluence'].get('url', 'http://localhost:8090')
+        if content['c_version'] == '1':
+            url = '{base_url}/pages/?pageId={page_id}'
+        else:
+            url = "{base_url}/pages/diffpagesbyversion.action?" \
+                  "pageId={page_id}&" \
+                  "selectedPageVersions={version_number_1}&selectedPageVersions={version_number_2}"
         return url.format(
             base_url=base_url,
             page_id=content['c_contentid'],
