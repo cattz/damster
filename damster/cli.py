@@ -9,7 +9,7 @@ log = initialize_logger(__name__)
 @click.group()
 @click.version_option()
 # @click.option('--debug/--no-debug', default=False)
-@click.option('--config', required=False, help='configuration file to use')
+@click.option('--config', '-c', required=False, help='configuration file to use')
 @click.pass_context
 def cli(ctx, config):
     """Damster: Reports from Atlassian tools.
@@ -58,7 +58,7 @@ def bamboo_builds(ctx, from_date, to_date, use_cache):
 
 
 @bamboo.command('deployment-permissions', short_help='generate deployment permissions report')
-@click.option('--use-ssh-tunnel/--no-use-ssh-tunnel', default=False)
+@click.option('--use-ssh-tunnel/--no-use-ssh-tunnel', '-S', default=False)
 @click.pass_context
 def bamboo_deployment_permissions(ctx, use_ssh_tunnel):
     """Deployment projects and environments permissions"""
@@ -78,7 +78,7 @@ def confluence():
 @confluence.command('changes', short_help='generate changes report')
 @click.argument('from-date', required=False)
 @click.argument('to-date', required=False)
-@click.option('--use-ssh-tunnel/--no-use-ssh-tunnel', default=False)
+@click.option('--use-ssh-tunnel/--no-use-ssh-tunnel', '-S', default=False)
 @click.pass_context
 def confluence_changes(ctx, from_date, to_date, use_ssh_tunnel):
     """Confluence content changes"""
