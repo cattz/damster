@@ -33,9 +33,9 @@ class GenericDB(object):
 
     def start_ssh_tunnel(self):
         ssh_settings = self.cfg['SSH']
-        host = self.db_settings['host']
+        host = self.db_settings['ssh_gateway']
         port = ssh_settings.get('port', 22)
-        remote_bind_address = ('localhost', int(self.db_settings.get('port', 5432)))
+        remote_bind_address = (self.db_settings.get('host'), int(self.db_settings.get('port', 5432)))
         local_bind_address = ('localhost', int(ssh_settings.get('local_bind_port', 6543)))
         tunnel = SSHTunnelForwarder(
             (host, port),
@@ -62,7 +62,7 @@ class GenericDB(object):
         else:
             return self._connect(**self.db_settings)
 
-    def _connect(self, dbname, dbuser, host, password, port):
+    def _connect(self, dbname, dbuser, host, password, port, ssh_gateway=None):
         cons = "dbname='{dbname}' user='{dbuser}' host='{host}' " \
                "password='{password}' port='{port}'".format(**locals())
         log.info('Connecting to db {dbname} at {host}:{port}'.format(**locals()))
