@@ -9,24 +9,24 @@ log = initialize_logger(__name__)
 
 class ConfluenceChanges(GenericDB):
     query_changes = """
-    SELECT c.contentid,
-           c.contenttype,
-           c.title,
-           c.version,
-           c.creationdate,
-           c.lastmoddate,
-           c.content_status,
-           c.spaceid,
-           um.username,
-           sp.spacekey,
-           sp.spacename
-    FROM   PUBLIC.content c
-    JOIN   PUBLIC.user_mapping um
-    ON     c.lastmodifier = um.user_key
-    JOIN   PUBLIC.spaces sp
-    ON     c.spaceid = sp.spaceid
-    WHERE  c.contenttype='PAGE'
-    AND    c.content_status = 'current'
+        SELECT c.contentid,
+               c.contenttype,
+               c.title,
+               c.version,
+               c.creationdate,
+               c.lastmoddate,
+               c.content_status,
+               c.spaceid,
+               um.username,
+               sp.spacekey,
+               sp.spacename
+        FROM   PUBLIC.content c
+        JOIN   PUBLIC.user_mapping um
+        ON     c.lastmodifier = um.user_key
+        JOIN   PUBLIC.spaces sp
+        ON     c.spaceid = sp.spaceid
+        WHERE  c.contenttype='PAGE'
+        AND    c.content_status = 'current'
         """
 
     name = 'confluence_changes'
