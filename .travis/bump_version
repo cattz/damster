@@ -1,15 +1,15 @@
 #!/bin/bash
 
-if [[ ( -z ${1+x} ) || ( -z ${2+x} ) ]]; then
+if [[ ( -z ${1+x} ) ]]; then
     cat << EOF
         usage: $(basename ${0}) repo increment
 
         Quick and dirty version bump script
         If a variable "BUILD_VERSION" is set, returns that variable as is
         If "BUILD_VERSION" is not set, returns the bumped version based on last existing tag
-        and appends .devN where N is the build number.
         (tags get sorted using 'sort -V', nothing fancy here)
         If no tags are present, the initial version will be 0.1.0
+        For branches other than 'master', and appends .devN where N is the build number.
 
         Expects arguments:
         - repo: the relative/absolute path to the repository
@@ -18,9 +18,10 @@ EOF
     exit 1
 fi
 
+set -x
 
 repo_path=${1}
-increase=${2:patch}
+increase=${2-patch}
 
 
 function autoversion(){
@@ -48,7 +49,7 @@ function autoversion(){
         echo "0.1.0${dev_suffix}"
     else
         a=( ${last_tag//./ } )   # replace points, split into array
-        case ${increase} in
+        case "${increase}" in
           patch)
             ((a[2]++))
             ;;
