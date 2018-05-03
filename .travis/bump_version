@@ -18,7 +18,6 @@ EOF
     exit 1
 fi
 
-set -x
 
 repo_path=${1}
 increase=${2-patch}
