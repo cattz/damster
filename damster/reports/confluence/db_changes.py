@@ -27,7 +27,7 @@ class ConfluenceChanges(GenericDB):
         LEFT JOIN   PUBLIC.spaces sp
         ON     c.spaceid = sp.spaceid
         WHERE  c.contenttype ='PAGE'
-        AND    c.content_status = 'current'
+        /*AND    c.content_status = 'current'*/
         {time_constraint}
         ORDER BY sp.spacename, c.title, c.lastmoddate
         """
@@ -76,8 +76,9 @@ class ConfluenceChanges(GenericDB):
                  ON c.spaceid = sp.spaceid
         WHERE  c.contentid = {prevver}
         """.format(prevver=prevver)
-        result = self.exec_query(query=query)[0]
-        return result
+        if prevver:
+            return self.exec_query(query=query)[0]
+        return None, None, None
 
     def _get_display_name(self, user_id):
         try:
