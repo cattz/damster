@@ -1,7 +1,7 @@
 from damster.utils import initialize_logger, time_to_excel, quoted
 from damster.reports.db_query import GenericDB
 from atlassian import Crowd
-
+from functools import lru_cache
 from distutils.dir_util import mkpath
 
 log = initialize_logger(__name__)
@@ -17,15 +17,16 @@ class ConfluenceChanges(GenericDB):
                c.lastmoddate,
                c.content_status,
                c.spaceid,
+               c.prevver,
                um.username,
                sp.spacekey,
                sp.spacename
         FROM   PUBLIC.content c
         JOIN   PUBLIC.user_mapping um
         ON     c.lastmodifier = um.user_key
-        JOIN   PUBLIC.spaces sp
+        LEFT JOIN   PUBLIC.spaces sp
         ON     c.spaceid = sp.spaceid
-        WHERE  c.contenttype='PAGE'
+        WHERE  c.contenttype ='PAGE'
         AND    c.content_status = 'current'
         """
 
@@ -40,6 +41,7 @@ class ConfluenceChanges(GenericDB):
         'c_lastmoddate',
         'c_content_status',
         'c_spaceid',
+        'c_prevver',
         'um_username',
         'sp_spacekey',
         'sp_spacename'
@@ -60,6 +62,20 @@ class ConfluenceChanges(GenericDB):
         self.from_date = from_date
         self.to_date = to_date
         self.crowd = Crowd(**cfg['Crowd'])
+
+    @lru_cache(maxsize=50)
+    def _get_space_info_for_draft(self, prevver):
+        query = """
+        SELECT sp.spacekey, 
+               sp.spacename,
+               sp.spaceid
+        FROM   PUBLIC.spaces sp 
+               JOIN PUBLIC.content c 
+                 ON c.spaceid = sp.spaceid 
+        WHERE  c.contentid = {prevver} 
+        """.format(prevver=prevver)
+        result = self.exec_query(query=query)[0]
+        return result
 
     def _get_display_name(self, user_id):
         try:
@@ -101,6 +117,12 @@ class ConfluenceChanges(GenericDB):
             report_row['excel_created'] = time_to_excel(report_row['c_creationdate'])
             report_row['excel_modified'] = time_to_excel(report_row['c_lastmoddate'])
             report_row['user_name'] = self._get_display_name(report_row['um_username'])
+            log.debug(report_row)
+            if report_row['sp_spacekey'] == 'None':
+                space_key, space_name, space_id = self._get_space_info_for_draft(report_row['c_prevver'])
+                report_row['sp_spacekey'] = space_key
+                report_row['sp_spacename'] = space_name
+                report_row['c_spaceid'] = space_id
             report.append(report_row)
         return report
 
