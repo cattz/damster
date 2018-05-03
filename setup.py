@@ -20,8 +20,10 @@ setup(
     include_package_data=True,
 
     zip_safe=False,
+
     install_requires=[
         'configparser',
+        'arrow',
         'click',
         'atlassian-python-api',
         'arrow',
@@ -29,8 +31,10 @@ setup(
         'schedule',
         'jinja2',
         'psycopg2',
-        'sshtunnel'
+        'sshtunnel',
+        'six'
     ],
+
     extras_require={
         'dev': [
             'pytest',
@@ -38,22 +42,12 @@ setup(
             'coverage',
             'tox'
         ],
-        'reports': [
-            'jinja2',
-            'psycopg2'
-        ],
-        'metrics': [
-            'influxdb',
-            'schedule'
-        ]
     },
     platforms='Platform Independent',
 
     entry_points={
         "console_scripts": [
             "damster    = damster.cli:cli",
-            "damster-metrics    = damster.metric:main",
-            "damster-reports    = damster.report:main"
         ]
     },
 
@@ -74,9 +68,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        'Topic :: Internet',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Software Development :: Libraries :: Application Frameworks']
+        'Topic :: Software Development :: Libraries :: Application Frameworks'
+    ]
 )

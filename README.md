@@ -38,7 +38,7 @@ Use this configuration when you can not access the DB directly. For example, if 
         CLIENT   | <== SSH ======> | SERVER  | <== Sec  ==> | SERVER |
     -------------+            |    +---------+    Group     +--------+
                               |
-                          AWS (only port 22 is open)
+                          AWS (only access to port 22 on app.server)
 
     ----------------------------------------------------------------------
 
@@ -51,3 +51,12 @@ Example configuration for the above case:
     ssh_gateway=app.server
     host=rds.server
     port=5432
+
+Additionally, you may also need an SSH section, if the defaults do not work for your case:
+
+    [SSH]
+    ; All below values are optional. Examples are the default values
+    ;ssh_username: current_user
+    ;ssh_private_key: ~/.ssh/id_rsa
+    ;port: 22
+    ;local_bind_port: 6543

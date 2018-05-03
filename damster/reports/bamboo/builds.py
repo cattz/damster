@@ -5,7 +5,9 @@ from atlassian import Bamboo
 import arrow
 import jinja2
 from distutils.dir_util import mkpath
-from urllib.parse import unquote
+#from urllib.parse import unquote
+from six.moves.urllib.parse import unquote
+
 
 log = initialize_logger(__name__)
 
