@@ -67,8 +67,8 @@ class GenericDB(object):
                "password='{password}' port='{port}'".format(**locals())
         if ssh_gateway:
             log.info('Connecting to db {dbname} at {host}:{port} through gateway {gateway}'.format(
-                host= self.db_settings.get('host'),
-                port= self.db_settings.get('port'),
+                host=self.db_settings.get('host'),
+                port=self.db_settings.get('port'),
                 dbname=dbname,
                 gateway=ssh_gateway
                 )
