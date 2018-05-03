@@ -28,6 +28,8 @@ class ConfluenceChanges(GenericDB):
         ON     c.spaceid = sp.spaceid
         WHERE  c.contenttype ='PAGE'
         AND    c.content_status = 'current'
+        {time_constraint}
+        ORDER BY sp.spacename, c.title, c.lastmoddate
         """
 
     name = 'confluence_changes'
@@ -66,13 +68,13 @@ class ConfluenceChanges(GenericDB):
     @lru_cache(maxsize=50)
     def _get_space_info_for_draft(self, prevver):
         query = """
-        SELECT sp.spacekey, 
+        SELECT sp.spacekey,
                sp.spacename,
                sp.spaceid
-        FROM   PUBLIC.spaces sp 
-               JOIN PUBLIC.content c 
-                 ON c.spaceid = sp.spaceid 
-        WHERE  c.contentid = {prevver} 
+        FROM   PUBLIC.spaces sp
+               JOIN PUBLIC.content c
+                 ON c.spaceid = sp.spaceid
+        WHERE  c.contentid = {prevver}
         """.format(prevver=prevver)
         result = self.exec_query(query=query)[0]
         return result
@@ -100,13 +102,13 @@ class ConfluenceChanges(GenericDB):
         )
 
     def generate_report(self):
-        time_constraint = "AND c.lastmoddate > CURRENT_DATE - interval '1 months';"
+        time_constraint = "AND c.lastmoddate > CURRENT_DATE - interval '1 months'"
         if self.from_date:
             time_constraint = " AND c.lastmoddate > {}".format(self.from_date)
         if self.to_date:
             time_constraint = time_constraint + " AND c.lastmoddate > {}".format(self.to_date)
 
-        query = self.query_changes + time_constraint
+        query = self.query_changes.format(time_constraint=time_constraint)
         confluence_changes = self.exec_query(query=query)
 
         report = list()
