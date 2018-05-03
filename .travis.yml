@@ -1,22 +1,21 @@
 sudo: false
 language: python
 python:
-    - "2.7"
-    - "3.4"
-    - "3.5"
-    - "3.6"
+- '2.7'
+- '3.4'
+- '3.5'
+- '3.6'
 install: pip install tox
 before_script:
-    - .travis/bump_version ./ ${AUTOVERSION_INCREMENT} > damster/VERSION
+- ".travis/bump_version ./ ${AUTOVERSION_INCREMENT} > damster/VERSION"
 script:
-    - tox
-
+- tox
 deploy:
   provider: pypi
-  user: "cattz"
+  user: cattz
   distributions: sdist bdist_wheel
   password:
-    secure: py71sMNlWEeqGzmKW4UDnAd/fa+W3uiR+uu881CtjrLankC4NipxH/t2tK4H0OS3zlO6BGpDlfUOiiFROUhwUbSiXeOGtKdQFR9FX9l6h6VDy/AVnAQtNnTPM0cv+YMySEHQmzd4v14ZfwETgrjPGJcI/83AWg/WyRlEQ49LZj6Oa1RsTfWwkdp1xUSRqxNa+dAyp84G8OxlqCCCtPmbpRaBpNld/za7ptk2HpG0Fh5pb2iSpgBkRer6DRCYO+Ao+j82yPLA23uvBq10TLbAACX9P8GjkHSz0z3lBkMnaVDxrw2A3SX1IJiWzFLkSY4EoKakBONxD/FATVcRx3pCKHOWIPNfFUMnQMxpRa+gh1Ot7hy+jVHj9WLVaK96oJTT2kTOj/VA1DHl5mA+SX/BcMqyGD989FbKBWoVBY64YuprO2LlUQDYeJOLyAYkuYMohIogmi5LX/+Gfpt2lNEIRY4SyV6SdSdhCQnIB1nZaE8u/ZW6qF/p57JlN3+sLACNCKHUOw4aFmRiBcLWjBCSuw/gS2J3fbFwKbfcg6tGtF7Oe7D0nDvEXLvXr2UgmSWIhlaz+LTvCMrZWbLg79j+X0qs3f3aUcXoLpEgM4Jz3qhbH6ana8ifk+KrmPp6vwH55U/CNVIOPL1F7WBQ7Ggl68MCcPVusEMoQObwiee1C7g=
+    secure: wkGIXiYjNBmc0gJL6wJctrGatHQD0WY5vGsJ0WyCWcbRQk+CXkCPGfsDwdnBQGY7mJY6yy0wOV0QE6kB/a6qnSVkTZMZppc4vZYyjYHbU0daH0Ly99Mn4OCLQm0ReB+5ORMALlK1CaQiFIPfT94x4IC/G/sZeWwH8HBkpGxrLYzMjo+bZqV4zJp06CEzwursOXYSVOboSdRLIca8i3l4bITQiWinDC5m+H3Ty+Yosw12HtL3oc3c9e570YEmFme3+C+0iITeTctqoBygmTew4qu3R2IaNeQpx1WCshb8v23hVBYBFcsUeeVtCXkXHeSji2V6IY2hlgQoZfGigQRkUrXKBZ0QGS5b/WRxHymh4qb47EppRA1AerSGD1EJ0S40ijrpixE6hbWVqLhsShGlfgszCOAZ83LmdaBeOpc3mrT0IhgnL3azjuG0EQ07OsduhTKk9Yfi5o0FGKgyJwNBvbHAr/fFNN0ZncPSO0WvcD3kYPy9UqTCFCR4hioV87/Ua5L24tRwYMeYkPlTR3cWJRcezxGEDihmksiSoKNr6Zb6m6NXWUEpK4cZYzLGkjm+8HPxzKFT+yFZlvHJvtOuvWTjB3+IzfMVjwVPWfhtFZK4vmOgpjpSvNlhyCfNNNXRh5f4de13Ss/oQhchgNzXRVEs5Fg31Cmh7aH83Cb9rCg=
   on:
     branch: master
     python: 3.5
