@@ -40,8 +40,8 @@ class GenericDB(object):
         tunnel = SSHTunnelForwarder(
             (host, port),
             ssh_username=ssh_settings.get('ssh_username', getuser()),
-            ssh_private_key=os.path.expanduser(
-                ssh_settings.get('ssh_private_key', '~/.ssh/id_rsa')),
+            ssh_private_key=os.path.expanduser('~/.ssh/{}'.format(
+                ssh_settings.get('ssh_private_key', 'id_rsa'))),
             remote_bind_address=remote_bind_address,
             local_bind_address=local_bind_address
         )
