@@ -14,7 +14,7 @@ This is a WIP, starting with some reports from Bamboo and Confluence:
 * Confluence
   * **changes**: changes in Confluence content in the specific period
 
-Most fo this reports will produce 3 files:
+Most of this reports will produce 3 files:
 * `.json` contains the raw data used for the report.
 * `.csv` contains the above data 'flattened' as csv
 * `.html` is a more visual representation of the report
@@ -55,7 +55,7 @@ Options:
 
 There are 3 levels of configuration files that can override settings from the previous level:
 
-1. Package defaults, stored in `damster/deaults.cfg`. This file contains the whole set of available
+1. Package defaults, stored in `damster/defaults.cfg`. This file contains the whole set of available
 settings and is a good default for your development install.
 2. User settings, from `~/.config/damster.cfg` can be used to store user specific settings, like secrets, etc
 3. Per-use settings, passes as an argument to damster in each call to the command line:
@@ -64,7 +64,7 @@ settings and is a good default for your development install.
 (.env) $ damster -c path/to/bamboo-prod.cfg bamboo builds
 ```
 
-Some of the reports use the REST API for retrieving dat, while others will try to connect directly to the
+Some of the reports use the REST API for retrieving data, while others will try to connect directly to the
 database. For the REST API reports you will need to provide a user credentials with sufficient permissions,
 while for the database reports you will need the credentials of a user with, at least, `SELECT` privileges
 on the corresponding database.
