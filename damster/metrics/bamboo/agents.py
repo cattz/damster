@@ -17,7 +17,7 @@ def _sanitize_url(url):
 
 class BambooBuildAgentsMetrics(object):
 
-    AGENTS_BUILDING = re.compile(r'(\d+) of (\d+) online agents building')
+    AGENTS_BUILDING = re.compile(r'(?P<online>\d+)(?: of (?P<busy>\d+))? online agents(?: building)?')
 
     def __init__(self, bamboo_client, influx_client):
         self.cli = bamboo_client
@@ -61,8 +61,8 @@ class BambooBuildAgentsMetrics(object):
             total_queued = len(queued)
             try:
                 search = re.search(self.AGENTS_BUILDING, activity['agentSummary'])
-                agents_building = int(search.group(1))
-                agents_online = int(search.group(2))
+                agents_building = int(search.groupdict('0')['busy'])
+                agents_online = int(search.groupdict('0')['online'])
             except AttributeError:
                 log.error('Error parsing agentSummary')
                 agents_building = 0
