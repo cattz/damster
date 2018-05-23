@@ -12,7 +12,6 @@ log = initialize_logger(__name__)
 
 @click.group()
 @click.version_option()
-# @click.option('--debug/--no-debug', default=False)
 @click.option('--config', '-c', required=False, help='configuration file to use')
 @click.pass_context
 def damster(ctx, config):
