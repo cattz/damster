@@ -6,6 +6,8 @@ import arrow
 import jinja2
 from distutils.dir_util import mkpath
 from six.moves.urllib.parse import unquote
+import sys
+import requests
 
 
 log = initialize_logger(__name__)
@@ -31,7 +33,13 @@ class BambooBuildsReport(BaseReport):
                 self._time_to_string(self.from_date), self._time_to_string(self.to_date)
             ))
             report = list()
-            for project in self.bamboo.projects():
+            try:
+                bamboo_projects = self.bamboo.projects()
+            except requests.exceptions.ConnectionError as exception:
+                log.error(exception)
+                sys.exit(-1)
+
+            for project in bamboo_projects:
                 log.info('Retrieving plans for project "{}:{}"'.format(project['key'], project['name']))
                 project_description = project['description'] if 'description' in project else ''
                 project_dict = dict(

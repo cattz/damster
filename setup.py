@@ -28,7 +28,6 @@ setup(
         'atlassian-python-api',
         'arrow',
         'influxdb',
-        'schedule',
         'jinja2',
         'psycopg2',
         'sshtunnel',
@@ -47,7 +46,7 @@ setup(
 
     entry_points={
         "console_scripts": [
-            "damster    = damster.cli:cli",
+            "damster    = damster.main:damster",
         ]
     },
 
