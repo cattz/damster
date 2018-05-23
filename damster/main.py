@@ -3,6 +3,8 @@ from damster.reports.bamboo.commands import bamboo_builds, bamboo_deployment_per
 from damster.reports.confluence.commands import confluence_changes
 from damster.metrics.bamboo.commands import agent_status, build_activity
 
+from atlassian import Confluence
+
 import click
 
 log = initialize_logger(__name__)
@@ -47,6 +49,17 @@ def metrics():
 def metrics_bamboo():
     """Collect Bamboo metrics."""
     pass
+
+
+@damster.command('publish-to-confluence')
+@click.argument('filename', required=True)
+@click.argument('page_id', required=True)
+@click.pass_context
+def publish_to_confluence(ctx, filename, page_id):
+    """Publish file to Confluence"""
+    cfg = ctx.obj
+    confluence = Confluence(**cfg['Confluence'])
+    confluence.attach_file(filename=filename, page_id=page_id)
 
 
 reports_bamboo.add_command(bamboo_builds)
