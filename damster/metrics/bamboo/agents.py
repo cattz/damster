@@ -4,6 +4,8 @@ try:
     from urlparse import urlparse
 except ImportError:
     from urllib.parse import urlparse
+from pprint import pformat
+
 
 log = initialize_logger(__name__)
 
@@ -24,7 +26,7 @@ class BambooBuildAgentsMetrics(object):
     def agent_status(self, metric_name):
         try:
             agents = self.cli.agent_status()
-            log.debug('Agent Status: {}'.format(agents))
+            log.debug('Agent Status:\n{}'.format(pformat(agents)))
             metrics = list()
             for agent in agents:
                 metrics.append(dict(
@@ -49,7 +51,7 @@ class BambooBuildAgentsMetrics(object):
     def activity(self, metric_name, tags=None):
         try:
             activity = self.cli.activity()
-            log.debug('Build Activity: {}'.format(activity))
+            log.debug('Build Activity:\n{}'.format(pformat(activity)))
 
             building = [b for b in activity['builds'] if b['status'] == 'BUILDING']
             queued = [b for b in activity['builds'] if b['status'] == 'QUEUED']
@@ -82,7 +84,7 @@ class BambooBuildAgentsMetrics(object):
                 )
             if tags:
                 metric['tags'].update(tags)
-            log.debug('Metric: {}'.format(metric))
+            log.debug('Metric:\n{}'.format(pformat(metric)))
             self.influx.write_points([metric])
         except Exception as e:
-            log.error('Bamboo Activity threw an Excepton: {}'.format(e))
+            log.error('Bamboo Activity threw an Exception: {}'.format(e))
