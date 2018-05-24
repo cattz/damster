@@ -181,3 +181,10 @@ Don't forget to instruct `damster` to use the ssh gateway by adding the `-S` or 
 ```bash
 (.env) $ damster -c myconfig.cfg confluence changes -S
 ```
+
+# Debugging
+
+Debug logging can be enabled via environment variable. Default is INFO
+
+```
+DAMSTER_LOGLEVEL=DEBUG
