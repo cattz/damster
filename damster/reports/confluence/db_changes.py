@@ -1,6 +1,6 @@
 from damster.utils import initialize_logger, time_to_excel, quoted
 from damster.reports.db_query import GenericDB
-from atlassian import Crowd
+from damster.crowd import Crowd
 from functools import lru_cache
 from distutils.dir_util import mkpath
 

@@ -1,8 +1,6 @@
 from damster.utils import initialize_logger
+from damster.crowd import Crowd
 from damster.reports.db_query import GenericDB
-from atlassian import Crowd
-
-
 from distutils.dir_util import mkpath
 
 log = initialize_logger(__name__)
