@@ -165,6 +165,30 @@ host=rds.server
 port=5432
 ```
 
+Another use case for the SSH tunnel would be having your DB server only listening in localhost
+
+------------------------------------------------------------
+
+                          |
+-------------+            |    +-----------+
+    LOCAL    |            |    |  DB SRV.  |
+    CLIENT   | <== SSH ======> | port 5432 |
+-------------+            |    +-----------+
+                          |
+                      Port 5432 only listening for localhost
+
+--------------------------------------------------------------
+
+```ini
+[Bamboo DB]
+dbname=bamboo
+dbuser=bamboo
+password=password1
+ssh_gateway=db_server
+host=localhost
+port=5432
+```
+
 Additionally, when using the ssh tunel, you will need an SSH section if the defaults (below) do not work for your case:
 
 ```ini
