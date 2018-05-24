@@ -5,7 +5,13 @@
 
 Damster is a collection of scripts to collect metrics and reports from Atlassian tools.
 
-This is a WIP, starting with some reports from Bamboo and Confluence:
+The scripts are wrapped by the `damster` command line tool. The tool has 3 top-level subcommands,
+for generating reports, publishing metrics and (for conveninece) a quick way to publish an attachment to
+a Confluence page.
+
+## Reports
+
+At the moment, these are the reports available:
 
 * Bamboo
   * **builds:** All builds for a specific time period
@@ -26,29 +32,69 @@ The output location for this files can be defined in the configuration:
 destination_folder=C:\work\damster\globalitconfluence
 ```
 
+## Metrics
+
+All metrics commands collect a specific set of metrics and publish them to InfluxDB.
+
+Available metrics:
+
+* Bamboo
+  * **agent-status** Collects the following data from bamboo agents: name, busy, enabled, type
+  * **activity** Collects data from the build activity page: number of agents online, agents building
+    (split in local and remote) and queued jobs.
+
+Note: You will note that the information from the above metrics is very similar, but not exactly the same.
+`agent-status` provides more granularity, giving specific status for each agent, instead of just totals.
+On the other side, `activity` provides the queue size, which is a very important metric.
+
+The InfluxDB settings can be provided in the configuration:
+
+```ini
+[InfluxDB]
+host=influx.example.com
+port=8086
+username=root
+password=root
+database=my-db
+```
+
 # Usage
 
-Create a virtualenv and install `damster`, either from source or from PyPi:
+Create a virtualenv and install `damster`, either from source or from PyPi/Artifactory:
 
 ```bash
 $ virtualenv .env
 $ source .env/bin/activate
 (.env) $ pip install damster                # Install from PyPi
-(.env) $ pip install -e ./path/to/damster   # Install from source
+(.env) $ pip install -e ./path/to/damster   # Install from source after clone
+(.env) $ damster
+Usage: damster [OPTIONS] COMMAND [ARGS]...
+
+  Damster: Reports and metrics from Atlassian tools.
+
+Options:
+  --version          Show the version and exit.
+  -c, --config TEXT  configuration file to use
+  --help             Show this message and exit.
+
+Commands:
+  metrics                Collect metrics and store them in InfluxDB.
+  publish-to-confluence  Publish file to Confluence
+  reports                Generate reports.
+
 ```
 
 For specific instructions on how to use a report, you can request help form the cli:
 
 ```bash
-(.env) $ damster bamboo builds --help
-Usage: damster bamboo builds [OPTIONS] FROM_DATE [TO_DATE]
+(.env) $ damster reports bamboo builds --help
+Usage: damster reports bamboo builds [OPTIONS] FROM_DATE [TO_DATE]
 
   Generate a builds report
 
 Options:
   --use-cache / --no-use-cache
   --help                        Show this message and exit.
-
 ```
 
 # Configuration
@@ -119,7 +165,7 @@ host=rds.server
 port=5432
 ```
 
-Additionally, you may also need an SSH section, if the defaults (below) do not work for your case:
+Additionally, when using the ssh tunel, you will need an SSH section if the defaults (below) do not work for your case:
 
 ```ini
 [SSH]
@@ -130,7 +176,7 @@ Additionally, you may also need an SSH section, if the defaults (below) do not w
 ;local_bind_port: 6543
 ```
 
-Don't forget to instruct `damster` to use the ssh gateway by adding the `-S` flag:
+Don't forget to instruct `damster` to use the ssh gateway by adding the `-S` or `--use-ssh-tunnel` flag:
 
 ```bash
 (.env) $ damster -c myconfig.cfg confluence changes -S
