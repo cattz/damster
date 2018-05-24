@@ -8,4 +8,4 @@ class Crowd(CrowdNotMemoized):
 
     @lru_cache(maxsize=500)
     def user(self, user_id):
-        super(Crowd).user(username=user_id)
+        return super(Crowd, self).user(username=user_id)

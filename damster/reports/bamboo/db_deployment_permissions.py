@@ -86,8 +86,9 @@ class BambooDBDeploymentPermissions(GenericDB):
         try:
             user_details = self.crowd.user(user_id)
             return user_details['display-name']
-        except Exception:
-            return user_id
+        except Exception as e:
+            log.debug('User ID {} not found in Crowd'.format(user_id))
+        return user_id
 
     def generate_report(self):
         report = dict()
