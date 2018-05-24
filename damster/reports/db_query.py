@@ -1,5 +1,5 @@
 from damster.utils import initialize_logger
-from sshtunnel import SSHTunnelForwarder
+from sshtunnel import SSHTunnelForwarder, create_logger
 from getpass import getuser
 import psycopg2
 import jinja2
@@ -37,20 +37,23 @@ class GenericDB(object):
         port = ssh_settings.get('port', 22)
         remote_bind_address = (self.db_settings.get('host'), int(self.db_settings.get('port', 5432)))
         local_bind_address = ('localhost', int(ssh_settings.get('local_bind_port', 6543)))
+        username = ssh_settings.get('ssh_username', getuser())
+        ssh_private_key = os.path.expanduser('~/.ssh/{}'.format(
+            ssh_settings.get('ssh_private_key', 'id_rsa')))
         tunnel = SSHTunnelForwarder(
             (host, port),
-            ssh_username=ssh_settings.get('ssh_username', getuser()),
-            ssh_private_key=os.path.expanduser('~/.ssh/{}'.format(
-                ssh_settings.get('ssh_private_key', 'id_rsa'))),
+            ssh_username=username,
+            ssh_private_key=ssh_private_key,
             remote_bind_address=remote_bind_address,
-            local_bind_address=local_bind_address
+            local_bind_address=local_bind_address,
+            # logger=create_logger(logger=log, loglevel='DEBUG', capture_warnings=True, add_paramiko_handler=True)
         )
         try:
             tunnel.start()
             return tunnel
         except Exception as e:
             log.error('Error starting SSH tunnel to {}: {}'.format(host, e))
-            log.error('SSH settings: {}'.format(dict(ssh_settings)))
+            log.error('SSH user: {}, Key: {}, SSH tunnel:\n{}'.format(username, ssh_private_key, tunnel))
             sys.exit(-1)
 
     def connect(self):
