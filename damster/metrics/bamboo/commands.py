@@ -26,4 +26,4 @@ def build_activity(ctx, metric_prefix):
     influxdb = InfluxDBClient(**cfg['InfluxDB'])
 
     bamboo_metrics = BambooBuildAgentsMetrics(bamboo, influxdb)
-    bamboo_metrics.activity(metric_name='_'.join([metric_prefix, 'bamboo_agent_status']))
+    bamboo_metrics.activity(metric_name='_'.join([metric_prefix, 'bamboo_activity']))
