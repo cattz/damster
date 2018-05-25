@@ -105,7 +105,7 @@ class ConfluenceChanges(GenericDB):
     def generate_report(self):
         time_constraint = "AND c.lastmoddate > CURRENT_DATE - interval '1 months'"
         if self.from_date:
-            time_constraint = " AND c.lastmoddate > {}".format(self.from_date)
+            time_constraint = " AND c.lastmoddate > '{}'".format(self.from_date)
         if self.to_date:
             time_constraint = time_constraint + " AND c.lastmoddate > {}".format(self.to_date)
 
