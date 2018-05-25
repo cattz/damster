@@ -91,6 +91,7 @@ class GenericDB(object):
             self.name)
 
     def exec_query(self, query):
+        log.debug(query)
         self.cur.execute(query)
         return self.cur.fetchall()
 
