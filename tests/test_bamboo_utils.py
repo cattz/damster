@@ -1,4 +1,6 @@
 from damster.reports.bamboo.utils import TriggerReason
+from damster.utils import previous_month_range
+from datetime import date
 
 
 class TestParseTriggerReason(object):
@@ -31,3 +33,14 @@ class TestParseTriggerReason(object):
     def test_dummy(self):
         for reason, result in self.reasons:
             assert result == TriggerReason(reason).tuple
+
+
+class TestOPreviousMonthRange(object):
+    cases = [
+        (date(2018, 1, 1), ('2017-12-01', '2018-01-01')),
+        (date(2018, 5, 25), ('2018-04-01', '2018-05-01')),
+    ]
+
+    def test_previous_month(self):
+        for date_, result in self.cases:
+            assert previous_month_range(date_) == result

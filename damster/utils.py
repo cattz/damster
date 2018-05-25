@@ -3,6 +3,8 @@ import os
 import sys
 import pkg_resources
 import arrow
+import datetime
+from dateutil.relativedelta import relativedelta
 from arrow.parser import ParserError
 from configparser import ConfigParser, ExtendedInterpolation
 import re
@@ -101,3 +103,12 @@ def quoted(it):
 
 def replace_non_ascii(s, replacement=''):
     return re.sub(NON_ASCII, replacement, s)
+
+
+def previous_month_range(date=None):
+    """Return tuple with start/end dates for last month"""
+    fmt = "%Y-%m-%d"
+    today = date or datetime.date.today()
+    first_day_previous_month = (today - relativedelta(months=1)).replace(day=1)
+    first_day_current_month = today.replace(day=1)
+    return first_day_previous_month.strftime(fmt), first_day_current_month.strftime(fmt)
