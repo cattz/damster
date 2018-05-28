@@ -35,10 +35,12 @@ class TestParseTriggerReason(object):
             assert result == TriggerReason(reason).tuple
 
 
-class TestOPreviousMonthRange(object):
+class TestPreviousMonthRange(object):
     cases = [
         (date(2018, 1, 1), ('2017-12-01', '2018-01-01')),
+        (date(2018, 1, 31), ('2017-12-01', '2018-01-01')),
         (date(2018, 5, 25), ('2018-04-01', '2018-05-01')),
+        (date(2018, 12, 31), ('2018-11-01', '2018-12-01')),
     ]
 
     def test_previous_month(self):

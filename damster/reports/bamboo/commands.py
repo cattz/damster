@@ -1,10 +1,11 @@
 """Bamboo reports commands"""
 from damster.reports.bamboo import BambooDeploymentsReport, BambooBuildsReport, BambooDBDeploymentPermissions
+from damster.utils import previous_month_range
 import click
 
 
 @click.command('deployments', short_help='generate deployments report')
-@click.argument('from-date')
+@click.argument('from-date', required=False)
 @click.argument('to-date', required=False)
 @click.option('--use-cache/--no-use-cache', default=False)
 @click.pass_context
@@ -12,6 +13,9 @@ def bamboo_deployments(ctx, from_date, to_date, use_cache):
     """Generate a deployments report"""
 
     click.echo('Getting Bamboo deployments between {} and {}'.format(from_date, to_date))
+    if from_date is None:
+        from_date, to_date = previous_month_range()
+
     report = BambooDeploymentsReport(
         ctx.obj,
         from_date=from_date,
@@ -22,6 +26,7 @@ def bamboo_deployments(ctx, from_date, to_date, use_cache):
 
 @click.command('builds', short_help='generate build report')
 @click.argument('from-date')
+@click.argument('from-date', required=False)
 @click.argument('to-date', required=False)
 @click.option('--use-cache/--no-use-cache', default=False)
 @click.pass_context
@@ -29,6 +34,9 @@ def bamboo_builds(ctx, from_date, to_date, use_cache):
     """Generate a builds report"""
 
     click.echo('Getting Bamboo builds between {} and {}'.format(from_date, to_date))
+    if from_date is None:
+        from_date, to_date = previous_month_range()
+
     report = BambooBuildsReport(
         ctx.obj,
         from_date=from_date,

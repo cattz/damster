@@ -1,6 +1,7 @@
 """Confluence reports commands"""
 import click
 from damster.reports.confluence import ConfluenceChanges
+from damster.utils import previous_month_range
 
 
 @click.command('changes', short_help='generate changes report')
@@ -10,6 +11,9 @@ from damster.reports.confluence import ConfluenceChanges
 @click.pass_context
 def confluence_changes(ctx, from_date, to_date, use_ssh_tunnel):
     """Confluence content changes"""
+
+    if from_date is None:
+        from_date, to_date = previous_month_range()
 
     confluence_report = ConfluenceChanges(ctx.obj, from_date, to_date, use_ssh_tunnel=use_ssh_tunnel)
     confluence_report.save_to_csv()
