@@ -1,6 +1,9 @@
 """Memoize version of the Crowd user API"""
 from atlassian import Crowd as CrowdNotMemoized
-from functools import lru_cache
+try:
+    from functools import lru_cache
+except ImportError:
+    from backports.functools_lru_cache import lru_cache
 
 
 class Crowd(CrowdNotMemoized):

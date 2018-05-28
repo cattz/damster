@@ -31,7 +31,8 @@ setup(
         'jinja2',
         'psycopg2',
         'sshtunnel',
-        'six'
+        'six',
+        'backports.functools_lru_cache;python_version<"3"'
     ],
 
     extras_require={
