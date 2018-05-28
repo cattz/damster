@@ -2,6 +2,10 @@
 import click
 from damster.reports.confluence import ConfluenceChanges
 from damster.utils import previous_month_range
+import logging
+
+
+log = logging.getLogger(__name__)
 
 
 @click.command('changes', short_help='generate changes report')
@@ -15,6 +19,7 @@ def confluence_changes(ctx, from_date, to_date, use_ssh_tunnel):
     if from_date is None:
         from_date, to_date = previous_month_range()
 
+    log.info('Getting Confluence changes between {} and {}'.format(from_date, to_date))
     confluence_report = ConfluenceChanges(ctx.obj, from_date, to_date, use_ssh_tunnel=use_ssh_tunnel)
     confluence_report.save_to_csv()
     confluence_report.save_to_json()

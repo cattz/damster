@@ -2,6 +2,10 @@
 from damster.reports.bamboo import BambooDeploymentsReport, BambooBuildsReport, BambooDBDeploymentPermissions
 from damster.utils import previous_month_range
 import click
+import logging
+
+
+log = logging.getLogger(__name__)
 
 
 @click.command('deployments', short_help='generate deployments report')
@@ -12,10 +16,10 @@ import click
 def bamboo_deployments(ctx, from_date, to_date, use_cache):
     """Generate a deployments report"""
 
-    click.echo('Getting Bamboo deployments between {} and {}'.format(from_date, to_date))
     if from_date is None:
         from_date, to_date = previous_month_range()
 
+    log.info('Getting Bamboo deployments between {} and {}'.format(from_date, to_date))
     report = BambooDeploymentsReport(
         ctx.obj,
         from_date=from_date,
@@ -32,10 +36,10 @@ def bamboo_deployments(ctx, from_date, to_date, use_cache):
 def bamboo_builds(ctx, from_date, to_date, use_cache):
     """Generate a builds report"""
 
-    click.echo('Getting Bamboo builds between {} and {}'.format(from_date, to_date))
     if from_date is None:
         from_date, to_date = previous_month_range()
 
+    log.info('Getting Bamboo builds between {} and {}'.format(from_date, to_date))
     report = BambooBuildsReport(
         ctx.obj,
         from_date=from_date,
