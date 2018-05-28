@@ -7,7 +7,7 @@ version_file = os.path.join('damster', 'VERSION')
 setup(
     name='damster',
     description='Reports and metrics for Atlassian Tools',
-    long_description=open('README.md', 'r').read(),
+    long_description=open('README.rst', 'r').read(),
     license='Apache License 2.0',
     version=open(version_file, 'r').read().strip(),
     download_url='https://github.com/cattz/damster',
