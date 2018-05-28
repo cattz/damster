@@ -107,7 +107,7 @@ class ConfluenceChanges(GenericDB):
         if self.from_date:
             time_constraint = " AND c.lastmoddate > '{}'".format(self.from_date)
         if self.to_date:
-            time_constraint = time_constraint + " AND c.lastmoddate > {}".format(self.to_date)
+            time_constraint = time_constraint + " AND c.lastmoddate < '{}'".format(self.to_date)
 
         query = self.query_changes.format(time_constraint=time_constraint)
         confluence_changes = self.exec_query(query=query)

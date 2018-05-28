@@ -25,7 +25,6 @@ def bamboo_deployments(ctx, from_date, to_date, use_cache):
 
 
 @click.command('builds', short_help='generate build report')
-@click.argument('from-date')
 @click.argument('from-date', required=False)
 @click.argument('to-date', required=False)
 @click.option('--use-cache/--no-use-cache', default=False)
